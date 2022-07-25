@@ -2,19 +2,19 @@ from core.exceptions.base import MethodNotAllowed, UnauthorizedException
 
 
 class UserWithSameEmailExists(MethodNotAllowed):
-    message = "Пользователь с с таким емайлом уже зарегестрирован"
+    message = "User with same email exists"
 
 
 class UserWithSameLoginExists(MethodNotAllowed):
-    message = "Пользователь с таким логином уже зарегестрирован"
+    message = "User with same login exists"
 
 
 class UserWithSamePhoneExists(MethodNotAllowed):
-    message = "Пользователь с таким номером телефоном уже зарегестрирован "
+    message = "User with same phone exists"
 
 
 class UserDoesNotExists(MethodNotAllowed):
-    message = "Пользователя не существует"
+    message = "User does not exists"
 
 
 class PasswordOrLoginDoesNotMatch(UnauthorizedException):

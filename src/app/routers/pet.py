@@ -13,7 +13,7 @@ from app.services.pet.logic import PetLogic
 
 from core import auth
 from core.db.sessions import get_db
-from core.exceptions.base import MethodNotAllowed
+from core.exceptions.pet import PetDoesNotExists, PetAlreadyexists
 
 router = APIRouter()
 logic = PetLogic(model=Pet)
@@ -39,7 +39,7 @@ async def find_by_status(status: str = Query(examples={
     return lst_
 
 
-@router.get("/pet/find_by_tag", tags=['Pet'], name="Finds Pets by tag",response_model=schemes.PetBase)
+@router.get("/pet/find_by_tag", tags=['Pet'], name="Finds Pets by tag", response_model=schemes.PetBase)
 async def find_by_tag(tags: Union[List[str], None] = Query(default=None),
                       db: Session = Depends(get_db)):
     res = await logic.find_by_tags(tags=tags, db=db)
@@ -50,27 +50,30 @@ async def find_by_tag(tags: Union[List[str], None] = Query(default=None),
 async def create_pet(pet: schemes.PetBase, db: Session = Depends(get_db)):
     r = await logic.get_by_id(id=pet.id, session=db)
     if not r:
-        res = await logic.create_pet(pet=pet, db=db)
-        return res
-    return HTTPException(status_code=MethodNotAllowed.code, detail="Another pet already have same id")
+        pet = await logic.create_pet(pet=pet, db=db)
+        return pet
+    raise HTTPException(status_code=PetAlreadyexists.code, detail=PetAlreadyexists.message)
 
 
 @router.get("/pet/{pet_id}", tags=['Pet'], name="Finds Pets by id", response_model=schemes.PetBase)
 async def find_by_id(pet_id: int, db: Session = Depends(get_db)):
-    res = await logic.get_by_id(session=db, id=pet_id)
-    if not res:
-        pass
-    return res.__dict__
+    pet = await logic.get_by_id(session=db, id=pet_id)
+    if not pet:
+        raise HTTPException(status_code=PetDoesNotExists.code, detail=PetDoesNotExists.message)
+    return pet.__dict__
 
 
 @router.delete("/pet/{pet_id}", tags=['Pet'], name="Delete Pets by id", status_code=200)
 async def delete_by_id(pet_id: int, db: Session = Depends(get_db)):
     pet = await logic.get_by_id(id=pet_id, session=db)
     if not pet:
-        return "error"
+        raise HTTPException(status_code=PetDoesNotExists.code, detail=PetDoesNotExists.message)
     await logic.delete_by_id(id=pet_id, session=db)
 
 
 @router.put("/pet/{pet_id}", tags=['Pet'], name="Update an existing pet", status_code=200)
-async def update_pet(pet: schemes.PetBase, db: Session = Depends(get_db)):
+async def update_pet(pet_id: int, pet: schemes.PetBase, db: Session = Depends(get_db)):
+    p = await logic.get_by_id(id=pet_id, session=db)
+    if not p:
+        raise HTTPException(status_code=PetDoesNotExists.code, detail=PetDoesNotExists.message)
     await logic.update_by_id(id=pet.id, params=pet.dict(), session=db)
