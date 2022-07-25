@@ -7,7 +7,13 @@ from core.auth import AuthHandler
 
 from sqlalchemy import select
 from core.repository.base import BaseRepo
-from core.exceptions.user import UserExists
+from core.exceptions.user import (
+    UserWithSameEmailExists,
+    UserWithSameLoginExists,
+    UserWithSamePhoneExists,
+    UserDoesNotExists
+)
+from core.exceptions.server import ServerError
 
 
 class UserLogic(BaseRepo):
@@ -25,13 +31,18 @@ class UserLogic(BaseRepo):
         r = await db.execute(query)
         return r.scalars().first()
 
-    async def get_user_by_login(self, db: Session, login: str):
-        query = select(self.model).where(self.model.login == login)
+    async def get_user_by_login(self, db: Session, username: str):
+        query = select(self.model).where(self.model.login == username)
         r = await db.execute(query)
         return r.scalars().first()
 
-    async def delete_user(self, db: Session, user_id: int):
-        record = select(self.model).where(self.model.User.id == user_id)
+    async def get_user_by_phone(self, db: Session, phone: str):
+        query = select(self.model).where(self.model.phone == phone)
+        r = await db.execute(query)
+        return r.scalars().first()
+
+    async def delete_user(self, db: Session, username: str):
+        record = select(self.model).where(self.model.login == username)
         record = await db.execute(record)
         record = record.scalars().first()
         try:
@@ -43,8 +54,13 @@ class UserLogic(BaseRepo):
 
     async def create_user(self, password: str, db: Session, user: schemes.UserCreate):
         try:
-            if await self.check_login(user.login, db) or await self.check_email(user.email, db):
-                return False, UserExists
+            if await self.check_email(user.email, db):
+                return False, UserWithSameEmailExists
+            elif await self.check_login(user.login, db):
+                return False, UserWithSameLoginExists
+            elif await self.check_phone(user.phone, db):
+                return False, UserWithSamePhoneExists
+
             hashed_password = self.auth_handler.get_passwords_hash(password)
             data = user.dict()
             data['password'] = hashed_password
@@ -55,12 +71,16 @@ class UserLogic(BaseRepo):
             await db.refresh(db_user)
 
         except Exception as exc:
-            print(exc)
-            return {'status_code': 500, "detail": "Не удалось создать пользователя"}
+            return ServerError
         return True, user
 
     async def check_login(self, login: str, db: Session):
         if await self.get_user_by_login(db, login):
+            return True
+        return False
+
+    async def check_phone(self, phone: str, db: Session):
+        if await self.get_user_by_phone(db, phone):
             return True
         return False
 
@@ -69,23 +89,21 @@ class UserLogic(BaseRepo):
             return True
         return False
 
-    async def patch_user(self, db: Session, user: schemes.UserPatch, user_id: int):
-
+    async def patch_user(self, db: Session, user: schemes.UserPatch, username: str):
         try:
-            db_user = select(self.model.User).filter(self.model.User.id == user_id)
+            db_user = select(self.model).where(self.model.login == username)
             db_user = await db.execute(db_user)
             db_user = db_user.scalars().first()
-            res = await self.check_login(login=user.login, db=db)
-            if res:
-                return res
+            res = await self.check_login(login=username, db=db)
+            if not res:
+                return False, UserDoesNotExists
             if user.login is not None:
                 db_user.login = user.login
             if user.password is not None:
                 hashed_password = self.auth_handler.get_passwords_hash(user.password)
-                db_user.hash_password = hashed_password
+                db_user.password = hashed_password
             await db.commit()
             await db.refresh(db_user)
         except Exception as exc:
-            print(exc)
-            return {'status_code': 500, "detail": "Не удалось сделать обновить пользователя"}
-        return {'status_code': 200, "detail": "Операция произведена успешно"}
+            return ServerError
+        return True, db_user

@@ -3,7 +3,6 @@ from fastapi import (
     Depends,
     HTTPException,
     Request,
-    Response,
 )
 
 from sqlalchemy.orm import Session
@@ -13,6 +12,7 @@ from app.services.user.logic import UserLogic
 
 from core import auth
 from core.db.sessions import get_db
+from core.exceptions.user import PasswordOrLoginDoesNotMatch
 
 router = APIRouter()
 logic = UserLogic(model=User)
@@ -23,7 +23,7 @@ auth_handler = auth.AuthHandler()
 async def create_user(user: schemes.UserCreate, db: Session = Depends(get_db)):
     operation, res = await logic.create_user(db=db, user=user, password=user.password)
     if not operation:
-        return HTTPException(detail=res.message, status_code=res.code)
+        raise HTTPException(detail=res.message, status_code=res.error_code)
     return res
 
 
@@ -33,13 +33,13 @@ async def login(user: schemes.UserToken, db: Session = Depends(get_db)):
     if user_old and auth_handler.verify_password(plain_password=user.password, hash_password=user_old.password):
         token = auth_handler.encode_token(user_old.id)
         return {"token": token}
-    return HTTPException(status_code=400, detail="Does not correct login or password")
+    raise HTTPException(status_code=PasswordOrLoginDoesNotMatch.error_code, detail=PasswordOrLoginDoesNotMatch.message)
 
 
-@router.delete("/user/{user_id}", tags=["User"])
-async def delete_user(request: Request, db: Session = Depends(get_db),
+@router.delete("/user/{username}", tags=["User"])
+async def delete_user(username: str, request: Request, db: Session = Depends(get_db),
                       user=Depends(auth_handler.auth_wrapper)):
-    res = await logic.delete_user(db, user_id=request.user.id)
+    res = await logic.delete_user(db, username=username)
     return res
 
 
@@ -49,14 +49,9 @@ async def get_myself(request: Request, user=Depends(auth_handler.auth_wrapper), 
     return res
 
 
-@router.patch('/user/{user_id}', tags=['User'])
-async def patch_user(request: Request, user: schemes.UserPatch, db: Session = Depends(get_db),
-                     user_auth=Depends(auth_handler.auth_wrapper)):
-    res = await logic.patch_user(db=db, user=user, user_id=request.user.id)
+@router.patch('/user/{username}', tags=['User'])
+async def patch_user(username: str, user: schemes.UserPatch, db: Session = Depends(get_db)):
+    operation, res = await logic.patch_user(db=db, user=user, username=username)
+    if not operation:
+        raise HTTPException(detail=res.message, status_code=res.error_code)
     return res
-
-
-@router.get('/user/logout', tags=['User'])
-async def user_logout(request: Request,response:Response):
-    print('1')
-    print(1/0)
