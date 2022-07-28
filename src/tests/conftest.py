@@ -32,7 +32,7 @@ async def override_get_db() -> AsyncSession:
 
 
 @pytest_asyncio.fixture
-async def get_session() -> AsyncSession:
+async def get_session(event_loop) -> AsyncSession:
     async with session_local() as session:
         yield session
 

@@ -11,7 +11,10 @@ class PerformanceTests(HttpUser):
         data = {
             "login": fake.name(),
             "password": fake.password(),
-            "email": fake.email()
+            "email": fake.email(),
+            "first_name": "Ivan",
+            "last_name": "Grechka",
+            "phone": fake.phone_number()
         }
         headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
-        self.client.post("user/", headers=headers, data=data)
+        self.client.post("user", headers=headers, json=data)
