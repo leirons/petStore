@@ -1,8 +1,11 @@
+from typing import List
+
 from fastapi import (
     APIRouter,
     Depends,
     HTTPException,
     Request,
+    status
 )
 
 from sqlalchemy.orm import Session
@@ -13,13 +16,37 @@ from app.services.user.logic import UserLogic
 from core import auth
 from core.db.sessions import get_db
 from core.exceptions.user import PasswordOrLoginDoesNotMatch
+from app.schemes import Message
+from core.cache.cache import CacheManager
+from core.cache.backend import RedisBackend
+from core.cache.key_marker import CustomKeyMaker
 
 router = APIRouter()
 logic = UserLogic(model=User)
 auth_handler = auth.AuthHandler()
 
+cache_manager = CacheManager(backend=RedisBackend(), key_maker=CustomKeyMaker())
 
-@router.post("/user", tags=['User'])
+
+@router.get("/user/user_list", tags=["User"],
+            name="Get list of all users",
+            status_code=status.HTTP_200_OK,
+            response_model=List[schemes.User],
+            )
+@cache_manager.cached(prefix="user_list")
+async def get_list(db: Session = Depends(get_db)):
+    users = await logic.get_all(session=db)
+    lst_ = []
+    if not users:
+        return lst_
+    for user in users:
+        lst_.append(user.__dict__)
+    return lst_
+
+
+@router.post("/user", tags=['User'], response_model=schemes.UserCreate, status_code=status.HTTP_201_CREATED, responses={
+    409: {"model": Message},
+})
 async def create_user(user: schemes.UserCreate, db: Session = Depends(get_db)):
     operation, res = await logic.create_user(db=db, user=user, password=user.password)
     if not operation:
@@ -27,7 +54,9 @@ async def create_user(user: schemes.UserCreate, db: Session = Depends(get_db)):
     return res
 
 
-@router.post("/user/login", tags=['User'])
+@router.post("/user/login", tags=['User'], responses={
+    401: {"model": Message}
+}, status_code=status.HTTP_200_OK)
 async def login(user: schemes.UserToken, db: Session = Depends(get_db)):
     user_old = await logic.get_user_by_login(db, user.login)
     if user_old and auth_handler.verify_password(plain_password=user.password, hash_password=user_old.password):
@@ -36,20 +65,25 @@ async def login(user: schemes.UserToken, db: Session = Depends(get_db)):
     raise HTTPException(status_code=PasswordOrLoginDoesNotMatch.error_code, detail=PasswordOrLoginDoesNotMatch.message)
 
 
-@router.delete("/user/{username}", tags=["User"])
-async def delete_user(username: str, request: Request, db: Session = Depends(get_db),
-                      user=Depends(auth_handler.auth_wrapper)):
-    res = await logic.delete_user(db, username=username)
+@router.delete("/user/{username}", tags=["User"], responses={
+    404: {"model": Message}
+
+}, status_code=status.HTTP_200_OK)
+async def delete_user(username: str, request: Request, db: Session = Depends(get_db)):
+    operation, res = await logic.delete_user(db, username=username)
     return res
 
 
-@router.get("/user/", response_model=schemes.User, tags=["User"])
+@router.get("/user/", response_model=schemes.User, tags=["User"], status_code=status.HTTP_200_OK)
 async def get_myself(request: Request, user=Depends(auth_handler.auth_wrapper), db: Session = Depends(get_db)):
     res = await logic.get_user_by_id(db, user_id=request.user.id)
     return res
 
 
-@router.patch('/user/{username}', tags=['User'])
+@router.patch('/user/{username}', tags=['User'], responses={
+    404: {"model": Message}
+
+}, status_code=status.HTTP_202_ACCEPTED)
 async def patch_user(username: str, user: schemes.UserPatch, db: Session = Depends(get_db)):
     operation, res = await logic.patch_user(db=db, user=user, username=username)
     if not operation:

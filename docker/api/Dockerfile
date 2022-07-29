@@ -10,13 +10,12 @@ RUN apt-get update \
   && apt-get clean
 
 
-WORKDIR /app
+WORKDIR /edvantis/src
 
-COPY . /app
+COPY . /edvantis
 
 RUN pip install pipenv
-COPY Pipfile Pipfile.lock /app/
+COPY Pipfile Pipfile.lock /edvantis/
 RUN pipenv install --system --dev
-
 
 EXPOSE 8000

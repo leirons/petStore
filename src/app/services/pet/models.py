@@ -1,4 +1,4 @@
-from sqlalchemy import Column
+from sqlalchemy import Column, ForeignKey
 from sqlalchemy import Integer
 from sqlalchemy import String
 from sqlalchemy.dialects.postgresql import JSON
@@ -15,3 +15,6 @@ class Pet(Base):
     category = Column(JSON)
     tags = Column(JSON)
     store = relationship("Store", back_populates="pet")
+
+    user_id = Column(Integer, ForeignKey("user.id"))
+    user = relationship("User", back_populates="pet")

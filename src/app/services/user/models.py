@@ -1,12 +1,13 @@
 from sqlalchemy import Column
 from sqlalchemy import Integer
 from sqlalchemy import String
+from sqlalchemy.orm import relationship
 
 from core.db.sessions import Base
 
 
 class User(Base):
-    __tablename__ = "users"
+    __tablename__ = "user"
     id = Column(Integer, primary_key=True)
     login = Column(String, index=True, unique=True)
     email = Column(String, unique=True)
@@ -14,3 +15,5 @@ class User(Base):
     phone = Column(String, unique=True)
     first_name = Column(String)
     last_name = Column(String)
+
+    pet = relationship("Pet", back_populates="user")

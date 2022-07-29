@@ -37,11 +37,14 @@ class UserLogic(BaseRepo):
         return r.scalars().first()
 
     async def get_user_by_phone(self, db: Session, phone: str):
+
         query = select(self.model).where(self.model.phone == phone)
         r = await db.execute(query)
         return r.scalars().first()
 
     async def delete_user(self, db: Session, username: str):
+        if not await self.get_user_by_login(username=username,db=db):
+            return False,UserDoesNotExists
         record = select(self.model).where(self.model.login == username)
         record = await db.execute(record)
         record = record.scalars().first()
@@ -49,10 +52,12 @@ class UserLogic(BaseRepo):
             await db.delete(record)
             await db.commit()
         except UnmappedInstanceError as exc:
-            return {'status_code': 404, 'detail': "Не удалось удалить пользователя"}
-        return {'status_code': 200, "detail": "Пользователь удален"}
+            return False,ServerError
+        return True,None
 
     async def create_user(self, password: str, db: Session, user: schemes.UserCreate):
+        import time
+        now = time.time()
         try:
             if await self.check_email(user.email, db):
                 return False, UserWithSameEmailExists
@@ -60,7 +65,6 @@ class UserLogic(BaseRepo):
                 return False, UserWithSameLoginExists
             elif await self.check_phone(user.phone, db):
                 return False, UserWithSamePhoneExists
-
             hashed_password = self.auth_handler.get_passwords_hash(password)
             data = user.dict()
             data['password'] = hashed_password
@@ -69,9 +73,11 @@ class UserLogic(BaseRepo):
 
             await db.commit()
             await db.refresh(db_user)
-
+            end = time.time()
+            print(end-now)
         except Exception as exc:
-            return ServerError
+            print(exc)
+            return False, ServerError
         return True, user
 
     async def check_login(self, login: str, db: Session):
