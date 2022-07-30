@@ -28,12 +28,11 @@ auth_handler = auth.AuthHandler()
 cache_manager = CacheManager(backend=RedisBackend(), key_maker=CustomKeyMaker())
 
 
-@router.get("/user/user_list", tags=["User"],
+@router.get("/user/user_list", tags=["user"],
             name="Get list of all users",
             status_code=status.HTTP_200_OK,
             response_model=List[schemes.User],
             )
-@cache_manager.cached(prefix="user_list")
 async def get_list(db: Session = Depends(get_db)):
     users = await logic.get_all(session=db)
     lst_ = []
@@ -44,7 +43,7 @@ async def get_list(db: Session = Depends(get_db)):
     return lst_
 
 
-@router.post("/user", tags=['User'], response_model=schemes.UserCreate, status_code=status.HTTP_201_CREATED, responses={
+@router.post("/user", tags=['user'], response_model=schemes.UserCreate, status_code=status.HTTP_201_CREATED, responses={
     409: {"model": Message},
 })
 async def create_user(user: schemes.UserCreate, db: Session = Depends(get_db)):
@@ -54,7 +53,7 @@ async def create_user(user: schemes.UserCreate, db: Session = Depends(get_db)):
     return res
 
 
-@router.post("/user/login", tags=['User'], responses={
+@router.post("/user/login", tags=['user'], responses={
     401: {"model": Message}
 }, status_code=status.HTTP_200_OK)
 async def login(user: schemes.UserToken, db: Session = Depends(get_db)):
@@ -65,25 +64,27 @@ async def login(user: schemes.UserToken, db: Session = Depends(get_db)):
     raise HTTPException(status_code=PasswordOrLoginDoesNotMatch.error_code, detail=PasswordOrLoginDoesNotMatch.message)
 
 
-@router.delete("/user/{username}", tags=["User"], responses={
+@router.delete("/user/{username}", tags=["user"], responses={
     404: {"model": Message}
 
 }, status_code=status.HTTP_200_OK)
 async def delete_user(username: str, request: Request, db: Session = Depends(get_db)):
     operation, res = await logic.delete_user(db, username=username)
+    if not operation:
+        raise HTTPException(detail=res.message, status_code=res.error_code)
     return res
 
 
-@router.get("/user/", response_model=schemes.User, tags=["User"], status_code=status.HTTP_200_OK)
+@router.get("/user", response_model=schemes.User, tags=["user"], status_code=status.HTTP_200_OK)
 async def get_myself(request: Request, user=Depends(auth_handler.auth_wrapper), db: Session = Depends(get_db)):
     res = await logic.get_user_by_id(db, user_id=request.user.id)
     return res
 
 
-@router.patch('/user/{username}', tags=['User'], responses={
+@router.patch('/user/{username}', tags=['user'], responses={
     404: {"model": Message}
 
-}, status_code=status.HTTP_202_ACCEPTED)
+}, status_code=status.HTTP_200_OK)
 async def patch_user(username: str, user: schemes.UserPatch, db: Session = Depends(get_db)):
     operation, res = await logic.patch_user(db=db, user=user, username=username)
     if not operation:

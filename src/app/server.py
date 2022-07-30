@@ -2,10 +2,10 @@ import sentry_sdk
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.utils import get_openapi
 from starlette.middleware.sessions import SessionMiddleware
 
 from app.routers import users, store, pet
-from core.db.sessions import Base, engine
 from core.middlewares.authentication import (
     AuthenticationMiddleware,
     AuthBackend
@@ -25,9 +25,9 @@ def init_cors(app: FastAPI) -> None:
 
 
 def init_routers(app: FastAPI) -> None:
-    app.include_router(users.router, prefix='/api/v1')
     app.include_router(pet.router, prefix='/api/v1')
     app.include_router(store.router, prefix='/api/v1')
+    app.include_router(users.router, prefix='/api/v1')
 
 
 def init_middleware(app: FastAPI) -> None:
@@ -54,6 +54,27 @@ sentry_sdk.init(
 
 )
 
+
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
+
+    tags_desc_list = [
+        {"name": "user", "description": "Operations about user"},
+        {"name": "pet", "description": "Everything about your Pets"},
+        {"name": "store", "description": "Access to Petstore orders"}
+
+    ]
+    openapi_schema = get_openapi(
+        title="Custom title",
+        version="2.5.0",
+        description="This is a very custom OpenAPI schema",
+        routes=app.routes,
+    )
+    openapi_schema['tags'] = tags_desc_list
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+
+
 app = create_app()
-
-
+app.openapi = custom_openapi

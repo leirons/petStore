@@ -15,7 +15,10 @@ class Tags(BaseModel):
 
 class PetBase(BaseModel):
     id:int
+    user_id:int
     name: str = "doggie"
     tags: Tags
     category: Category
     status: str = "available"
+
+

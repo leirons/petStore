@@ -22,8 +22,7 @@ from core.db.sessions import get_db
 from core.exceptions.pet import PetDoesNotFound, PetAlreadyExists
 from core.exceptions.user import UserDoesNotExists
 
-
-cache_manager = CacheManager(backend=RedisBackend(),key_maker=CustomKeyMaker())
+cache_manager = CacheManager(backend=RedisBackend(), key_maker=CustomKeyMaker())
 router = APIRouter()
 logic = PetLogic(model=Pet)
 user_logic = UserLogic(model=User)
@@ -32,7 +31,7 @@ auth_handler = auth.AuthHandler()
 
 
 @cache_manager.cached(prefix="get_pet_list")
-@router.get("/pet/pet_list", tags=["Pet"],
+@router.get("/pet/pet_list", tags=["pet"],
             name="Get list of all pets",
             status_code=status.HTTP_200_OK,
             response_model=List[schemes.PetBase]
@@ -47,7 +46,7 @@ async def get_list(db: Session = Depends(get_db), user=Depends(auth_handler.auth
     return lst_
 
 
-@router.get("/pet/find_by_status", tags=['Pet'],
+@router.get("/pet/find_by_status", tags=['pet'],
             response_model=List[schemes.PetBase],
             status_code=status.HTTP_200_OK
             )
@@ -71,7 +70,7 @@ async def find_by_status(status_: str = Query(examples={
 
 @router.post(
     "/pet/",
-    tags=['Pet'],
+    tags=['pet'],
     name="Add new pet to the store",
     status_code=status.HTTP_200_OK,
     responses={
@@ -91,7 +90,7 @@ async def create_pet(pet: schemes.PetBase, db: Session = Depends(get_db), user=D
     return pet
 
 
-@router.get("/pet/{pet_id}", tags=['Pet'], name="Finds Pets by id", response_model=schemes.PetBase, responses={
+@router.get("/pet/{pet_id}", tags=['pet'], name="Finds Pets by id", response_model=schemes.PetBase, responses={
     409: {"model": Message},
 })
 async def find_by_id(pet_id: int, db: Session = Depends(get_db), user=Depends(auth_handler.auth_wrapper)):
@@ -101,7 +100,7 @@ async def find_by_id(pet_id: int, db: Session = Depends(get_db), user=Depends(au
     return pet.__dict__
 
 
-@router.delete("/pet/{pet_id}", tags=['Pet'], name="Delete Pets by id", status_code=200, responses={
+@router.delete("/pet/{pet_id}", tags=['pet'], name="Delete Pets by id", status_code=200, responses={
     404: {"model": Message}
 })
 async def delete_by_id(pet_id: int, db: Session = Depends(get_db), user=Depends(auth_handler.auth_wrapper)):
@@ -110,13 +109,10 @@ async def delete_by_id(pet_id: int, db: Session = Depends(get_db), user=Depends(
     if not pet:
         raise HTTPException(status_code=PetDoesNotFound.code, detail=PetDoesNotFound.message)
 
-    if not await user_logic.get_by_id(id=pet.user_id, session=db):
-        raise HTTPException(status_code=UserDoesNotExists.code, detail=UserDoesNotExists.message)
-
     await logic.delete_by_id(id=pet_id, session=db)
 
 
-@router.put("/pet/{pet_id}", tags=['Pet'], name="Update an existing pet", status_code=status.HTTP_202_ACCEPTED,
+@router.put("/pet/{pet_id}", tags=['pet'], name="Update an existing pet", status_code=status.HTTP_202_ACCEPTED,
             response_model=schemes.PetBase, responses={
         409: {"model": Message},
         404: {"model": Message}

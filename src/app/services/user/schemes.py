@@ -2,7 +2,7 @@ from typing import Optional, Union
 
 from pydantic import (
     BaseModel,
-    validator
+    validator,
 )
 
 from app.services.user.validate import validate_email
@@ -22,8 +22,8 @@ class UserBase(BaseModel):
 
 
 class UserCreate(UserBase):
-    password: str
-    login: str
+    password: str = "string355"
+    login: str = "string355"
 
     @validator("login")
     def validate_login(cls, login):
@@ -52,13 +52,13 @@ class User(UserBase):
 
 
 class UserToken(BaseModel):
-    login: str
-    password: str
+    login: str = "string355"
+    password: str = "string355"
 
     class Config:
         orm_mode = True
 
 
 class UserPatch(BaseModel):
-    login: Optional[Union[str, None]] = None
-    password: Optional[Union[str, None]] = None
+    login: Optional[Union[str, None]] = "string355"
+    password: Optional[Union[str, None]] = "string355"

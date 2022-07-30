@@ -2,7 +2,7 @@ from typing import List
 
 from fastapi import (
     APIRouter,
-    Depends, HTTPException,status
+    Depends, HTTPException, status
 )
 
 from sqlalchemy.orm import Session
@@ -17,7 +17,6 @@ from core.db.sessions import get_db
 from core.exceptions.pet import PetDoesNotFound
 from core.exceptions.store import (
     OrderDoesNotFound,
-    StatusDoesNotCorrect,
     OrderAlreadyExists
 )
 from app.schemes import Message
@@ -32,7 +31,7 @@ pet_logic = PetLogic(model=Pet)
 auth_handler = auth.AuthHandler()
 
 
-@router.get("/store/store_list", tags=["Store"],
+@router.get("/store/store_list", tags=["store"],
             name="Get list of all orders",
             status_code=status.HTTP_200_OK,
             response_model=List[schemes.Order]
@@ -48,14 +47,14 @@ async def get_list(db: Session = Depends(get_db), user=Depends(auth_handler.auth
     return lst_
 
 
-@router.get("/order/inventory", tags=['Store'], name="Returns pet inventories by status",
+@router.get("/order/inventory", tags=['store'], name="Returns pet inventories by status",
             status_code=status.HTTP_200_OK)
 async def find_by_id(db: Session = Depends(get_db), user=Depends(auth_handler.auth_wrapper)):
     res = await logic.get_inventory(db=db)
     return res
 
 
-@router.post("/store", tags=['Store'], name="Place an order for pet", status_code=status.HTTP_201_CREATED, responses={
+@router.post("/store", tags=['store'], name="Place an order for pet", status_code=status.HTTP_201_CREATED, responses={
     409: {"model": Message},
     404: {"model": Message},
 })
@@ -64,19 +63,15 @@ async def create_pet(order: schemes.Order, db: Session = Depends(get_db), user=D
     if o:
         raise HTTPException(detail=OrderAlreadyExists.message, status_code=OrderAlreadyExists.error_code)
 
-    status_ = order.status.lower()
     pet = await pet_logic.get_by_id(id=order.pet_id, session=db)
     if not pet:
         raise HTTPException(detail=PetDoesNotFound.message, status_code=PetDoesNotFound.error_code)
-
-    if status_ != "complete" and status_ != "approved" and status_ != "delivered":
-        raise HTTPException(detail=StatusDoesNotCorrect.message, status_code=StatusDoesNotCorrect.error_code)
 
     res = await logic.create_order(order=order, db=db)
     return res
 
 
-@router.delete("/store/{order_id}", tags=['Store'], name="Delete Order by id", status_code=status.HTTP_200_OK,
+@router.delete("/store/{order_id}", tags=['store'], name="Delete Order by id", status_code=status.HTTP_200_OK,
                responses={
                    404: {"model": Message},
                })
@@ -87,7 +82,7 @@ async def delete_by_id(order_id: int, db: Session = Depends(get_db), user=Depend
     await logic.delete_by_id(id=order_id, session=db)
 
 
-@router.get("/store/{order_id}", tags=['Store'], name="Finds Order by id", response_model=schemes.Order,
+@router.get("/store/{order_id}", tags=['store'], name="Finds Order by id", response_model=schemes.Order,
             status_code=status.HTTP_200_OK, responses={
         404: {"model": Message},
 

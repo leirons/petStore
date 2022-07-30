@@ -76,7 +76,6 @@ class UserLogic(BaseRepo):
             end = time.time()
             print(end-now)
         except Exception as exc:
-            print(exc)
             return False, ServerError
         return True, user
 
