@@ -1,9 +1,6 @@
 from typing import Optional, Union
 
-from pydantic import (
-    BaseModel,
-    validator,
-)
+from pydantic import BaseModel, validator
 
 from app.services.user.validate import validate_email
 

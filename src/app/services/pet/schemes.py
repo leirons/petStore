@@ -1,6 +1,4 @@
-from pydantic import (
-    BaseModel
-)
+from pydantic import BaseModel
 
 
 class Category(BaseModel):
@@ -10,15 +8,13 @@ class Category(BaseModel):
 
 class Tags(BaseModel):
     id: int
-    name: str
+    name: str = "Beauty"
 
 
 class PetBase(BaseModel):
-    id:int
-    user_id:int
+    id: int
+    user_id: int
     name: str = "doggie"
     tags: Tags
     category: Category
     status: str = "available"
-
-

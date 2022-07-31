@@ -1,6 +1,4 @@
-from sqlalchemy import Column, ForeignKey, Boolean
-from sqlalchemy import Integer
-from sqlalchemy import String
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 from core.db.sessions import Base

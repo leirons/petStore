@@ -1,17 +1,14 @@
 import sentry_sdk
-
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.openapi.utils import get_openapi
+from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
-from app.routers import users, store, pet
-from core.middlewares.authentication import (
-    AuthenticationMiddleware,
-    AuthBackend
-)
+from app.routers import pet, store, users
 from core.config import settings
-from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
+from core.dependencies.logging import Logging
+from core.middlewares.authentication import AuthBackend, AuthenticationMiddleware
+from fastapi import Depends, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.utils import get_openapi
 
 
 def init_cors(app: FastAPI) -> None:
@@ -25,9 +22,9 @@ def init_cors(app: FastAPI) -> None:
 
 
 def init_routers(app: FastAPI) -> None:
-    app.include_router(pet.router, prefix='/api/v1')
-    app.include_router(store.router, prefix='/api/v1')
-    app.include_router(users.router, prefix='/api/v1')
+    app.include_router(pet.router, prefix="/api/v1")
+    app.include_router(store.router, prefix="/api/v1")
+    app.include_router(users.router, prefix="/api/v1")
 
 
 def init_middleware(app: FastAPI) -> None:
@@ -41,7 +38,8 @@ def create_app() -> FastAPI:
         title="Pet Store Server",
         description="API",
         version="1.0.0",
-        docs_url="/docs"
+        docs_url="/docs",
+        dependencies=[Depends(Logging)],
     )
     init_routers(app=app)
     init_cors(app=app)
@@ -51,7 +49,6 @@ def create_app() -> FastAPI:
 
 sentry_sdk.init(
     dsn=settings.DSN,
-
 )
 
 
@@ -62,8 +59,7 @@ def custom_openapi():
     tags_desc_list = [
         {"name": "user", "description": "Operations about user"},
         {"name": "pet", "description": "Everything about your Pets"},
-        {"name": "store", "description": "Access to Petstore orders"}
-
+        {"name": "store", "description": "Access to Petstore orders"},
     ]
     openapi_schema = get_openapi(
         title="Custom title",
@@ -71,7 +67,7 @@ def custom_openapi():
         description="This is a very custom OpenAPI schema",
         routes=app.routes,
     )
-    openapi_schema['tags'] = tags_desc_list
+    openapi_schema["tags"] = tags_desc_list
     app.openapi_schema = openapi_schema
     return app.openapi_schema
 

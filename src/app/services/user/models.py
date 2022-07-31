@@ -1,6 +1,4 @@
-from sqlalchemy import Column
-from sqlalchemy import Integer
-from sqlalchemy import String
+from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
 
 from core.db.sessions import Base
@@ -16,4 +14,4 @@ class User(Base):
     first_name = Column(String)
     last_name = Column(String)
 
-    pet = relationship("Pet", back_populates="user")
+    pet = relationship("Pet", back_populates="user", cascade="all,delete")

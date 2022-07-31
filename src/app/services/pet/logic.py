@@ -1,7 +1,7 @@
-from sqlalchemy import select, String
+from sqlalchemy import String, select
 from sqlalchemy.orm import Session
-from app.services.pet import schemes
 
+from app.services.pet import schemes
 from core.repository.base import BaseRepo
 
 
@@ -20,10 +20,10 @@ class PetLogic(BaseRepo):
 
         except Exception as exc:
             print(exc)
-            return {'status_code': 500, "detail": f"Не удалось создать питомца"}
+            return {"status_code": 500, "detail": f"Не удалось создать питомца"}
         return {"pet": db_pet}
 
-    async def find_by_status(self, db,status:str):
+    async def find_by_status(self, db, status: str):
         query = select(self.model).where(self.model.status == status)
         r = await db.execute(query)
         return r.scalars().all()
@@ -31,7 +31,9 @@ class PetLogic(BaseRepo):
     async def find_by_tags(self, db: Session, tags: list):
         lst = []
         for tag in tags:
-            query = select(self.model).where(self.model.tags['name'].astext.cast(String) == tag)
+            query = select(self.model).where(
+                self.model.tags["name"].astext.cast(String) == tag
+            )
             r = await db.execute(query)
             lst.extend(r.scalars().all())
         return [i.__dict__ for i in lst]

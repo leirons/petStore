@@ -14,7 +14,7 @@ class RedisBackend:
             return False
 
         try:
-            return ujson.loads(result.decode('utf8'))
+            return ujson.loads(result.decode("utf8"))
         except UnicodeDecodeError:
             return pickle.loads(result)
 

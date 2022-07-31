@@ -59,6 +59,9 @@ asyncio = "*"
 pytest-async-sqlalchemy = "*"
 aioredis = "*"
 ujson = "*"
+fastapi-admin = "*"
+redis = "*"
+pre-commit = "*"
 
 [dev-packages]
 

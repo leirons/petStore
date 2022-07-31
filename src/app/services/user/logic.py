@@ -1,19 +1,17 @@
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.exc import UnmappedInstanceError
 
 from app.services.user import schemes
-
 from core.auth import AuthHandler
-
-from sqlalchemy import select
-from core.repository.base import BaseRepo
+from core.exceptions.server import ServerError
 from core.exceptions.user import (
+    UserDoesNotExists,
     UserWithSameEmailExists,
     UserWithSameLoginExists,
     UserWithSamePhoneExists,
-    UserDoesNotExists
 )
-from core.exceptions.server import ServerError
+from core.repository.base import BaseRepo
 
 
 class UserLogic(BaseRepo):
@@ -43,20 +41,21 @@ class UserLogic(BaseRepo):
         return r.scalars().first()
 
     async def delete_user(self, db: Session, username: str):
-        if not await self.get_user_by_login(username=username,db=db):
-            return False,UserDoesNotExists
+        if not await self.get_user_by_login(username=username, db=db):
+            return False, UserDoesNotExists
         record = select(self.model).where(self.model.login == username)
         record = await db.execute(record)
         record = record.scalars().first()
         try:
             await db.delete(record)
             await db.commit()
-        except UnmappedInstanceError as exc:
-            return False,ServerError
-        return True,None
+        except UnmappedInstanceError:
+            return False, ServerError
+        return True, None
 
     async def create_user(self, password: str, db: Session, user: schemes.UserCreate):
         import time
+
         now = time.time()
         try:
             if await self.check_email(user.email, db):
@@ -67,15 +66,15 @@ class UserLogic(BaseRepo):
                 return False, UserWithSamePhoneExists
             hashed_password = self.auth_handler.get_passwords_hash(password)
             data = user.dict()
-            data['password'] = hashed_password
+            data["password"] = hashed_password
             db_user = self.model(**data)
             db.add(db_user)
 
             await db.commit()
             await db.refresh(db_user)
             end = time.time()
-            print(end-now)
-        except Exception as exc:
+            print(end - now)
+        except Exception:
             return False, ServerError
         return True, user
 
@@ -109,6 +108,6 @@ class UserLogic(BaseRepo):
                 db_user.password = hashed_password
             await db.commit()
             await db.refresh(db_user)
-        except Exception as exc:
+        except Exception:
             return ServerError
         return True, db_user

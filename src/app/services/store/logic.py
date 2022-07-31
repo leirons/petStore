@@ -1,5 +1,6 @@
-from sqlalchemy.orm import Session
 from sqlalchemy import select
+from sqlalchemy.orm import Session
+
 from core.repository.base import BaseRepo
 
 
@@ -15,8 +16,8 @@ class StoreLogic(BaseRepo):
             await db.commit()
             await db.refresh(db_order)
 
-        except Exception as exc:
-            return {'status_code': 500, "detail": f"Не удалось создать заказ"}
+        except Exception:
+            return {"status_code": 500, "detail": f"Не удалось создать заказ"}
         return {"order": db_order}
 
     async def get_inventory(self, db: Session):

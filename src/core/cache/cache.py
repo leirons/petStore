@@ -1,4 +1,5 @@
 from functools import wraps
+
 from core.cache.backend import RedisBackend
 from core.cache.key_marker import CustomKeyMaker
 
@@ -15,10 +16,7 @@ class CacheManager:
                 if not self.backend or not self.key_maker:
                     raise Exception("backend or key_maker is None")
 
-                key = await self.key_maker.make(
-                    function=function,
-                    prefix=prefix
-                )
+                key = await self.key_maker.make(function=function, prefix=prefix)
                 cached_response = await self.backend.get(key=key)
                 if cached_response:
                     return cached_response
@@ -30,5 +28,3 @@ class CacheManager:
             return __cached
 
         return _cached
-
-

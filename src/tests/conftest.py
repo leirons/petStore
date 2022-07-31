@@ -1,25 +1,19 @@
 import pytest_asyncio
 from httpx import AsyncClient
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.orm import sessionmaker
 
 from app.server import app
-
-from sqlalchemy.orm import sessionmaker
-from core.db.sessions import Base
-
 from core.config import settings
-
-from sqlalchemy.ext.asyncio import create_async_engine
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from core.db.sessions import get_db
+from core.db.sessions import Base, get_db
 
 SQLALCHEMY_DATABASE_URL = settings.TEST_DB
 
-engine = create_async_engine(
-    SQLALCHEMY_DATABASE_URL, echo=True
-)
+engine = create_async_engine(SQLALCHEMY_DATABASE_URL, echo=True)
 
-session_local = sessionmaker(autocommit=False, autoflush=False, bind=engine, class_=AsyncSession)
+session_local = sessionmaker(
+    autocommit=False, autoflush=False, bind=engine, class_=AsyncSession
+)
 
 
 async def override_get_db() -> AsyncSession:
@@ -50,9 +44,9 @@ async def start_db():
 @pytest_asyncio.fixture
 async def client() -> AsyncClient:
     async with AsyncClient(
-            app=app,
-            base_url="http://testserver/",
-            headers={"Content-Type": "application/json"},
+        app=app,
+        base_url="http://testserver/",
+        headers={"Content-Type": "application/json"},
     ) as client:
         await start_db()
         yield client

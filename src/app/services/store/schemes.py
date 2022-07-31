@@ -11,5 +11,7 @@ class Order(BaseModel):
     @validator("status")
     def validate_status(cls, status):
         if status != "complete" and status != "approved" and status != "delivered":
-            raise ValueError("Status does not correct, available status: complete,approved,delivered. ")
+            raise ValueError(
+                "Status does not correct, available status: complete,approved,delivered. "
+            )
         return status
