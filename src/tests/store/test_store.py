@@ -3,16 +3,15 @@ from httpx import AsyncClient
 
 from app.services.pet.logic import PetLogic
 from app.services.pet.models import Pet
-from app.services.user.models import User
-from app.services.user.logic import UserLogic
-from app.services.user.schemes import UserCreate
 from app.services.pet.schemes import PetBase
+from app.services.user.logic import UserLogic
+from app.services.user.models import User
+from app.services.user.schemes import UserCreate
 
 pytestmark = pytest.mark.anyio
 
 
 class TestCase:
-
     @pytest.mark.asyncio
     async def test_create_order(self, client: AsyncClient, get_session):
         data = {
@@ -21,39 +20,35 @@ class TestCase:
             "last_name": "Grechka",
             "phone": "380502906562",
             "password": "string3004",
-            "login": "string55"
+            "login": "string55",
         }
 
         pet_data = {
             "id": 0,
             "user_id": 1,
             "name": "doggie",
-            "tags": {
-                "id": 0,
-                "name": "string"
-            },
-            "category": {
-                "id": 0,
-                "name": " Dogs"
-            },
-            "status": "available"
+            "tags": {"id": 0, "name": "string"},
+            "category": {"id": 0, "name": " Dogs"},
+            "status": "available",
         }
         user_data = UserCreate(**data)
         pet_data = PetBase(**pet_data)
         user_logic = UserLogic(User)
         pet_logic = PetLogic(Pet)
 
-        await user_logic.create_user(password=user_data.password, user=user_data, db=get_session)
+        await user_logic.create_user(
+            password=user_data.password, user=user_data, db=get_session
+        )
         await pet_logic.create_pet(db=get_session, pet=pet_data)
         order = {
             "id": 5,
             "pet_id": 0,
             "quantity": 0,
             "status": "complete",
-            "complete": True
+            "complete": True,
         }
 
-        response = await client.post('api/v1/store', json=order)
+        response = await client.post("api/v1/store", json=order)
         assert response.status_code == 201
 
     @pytest.mark.asyncio
@@ -64,41 +59,36 @@ class TestCase:
             "last_name": "Grechka",
             "phone": "380502906562",
             "password": "string3004",
-            "login": "string55"
+            "login": "string55",
         }
 
         pet_data = {
             "id": 0,
             "user_id": 1,
             "name": "doggie",
-            "tags": {
-                "id": 0,
-                "name": "string"
-            },
-            "category": {
-                "id": 0,
-                "name": " Dogs"
-            },
-            "status": "available"
+            "tags": {"id": 0, "name": "string"},
+            "category": {"id": 0, "name": " Dogs"},
+            "status": "available",
         }
         user_data = UserCreate(**data)
         pet_data = PetBase(**pet_data)
         user_logic = UserLogic(User)
         pet_logic = PetLogic(Pet)
 
-        await user_logic.create_user(password=user_data.password, user=user_data, db=get_session)
+        await user_logic.create_user(
+            password=user_data.password, user=user_data, db=get_session
+        )
         await pet_logic.create_pet(db=get_session, pet=pet_data)
         order = {
             "id": 5,
             "pet_id": 1,
             "quantity": 0,
             "status": "complete",
-            "complete": True
+            "complete": True,
         }
 
-        response = await client.post('api/v1/store', json=order)
+        response = await client.post("api/v1/store", json=order)
         assert response.status_code == 404
-
 
     @pytest.mark.asyncio
     async def test_delete_order(self, client: AsyncClient, get_session):
@@ -108,42 +98,38 @@ class TestCase:
             "last_name": "Grechka",
             "phone": "380502906562",
             "password": "string3004",
-            "login": "string55"
+            "login": "string55",
         }
 
         pet_data = {
             "id": 0,
             "user_id": 1,
             "name": "doggie",
-            "tags": {
-                "id": 0,
-                "name": "string"
-            },
-            "category": {
-                "id": 0,
-                "name": " Dogs"
-            },
-            "status": "available"
+            "tags": {"id": 0, "name": "string"},
+            "category": {"id": 0, "name": " Dogs"},
+            "status": "available",
         }
         user_data = UserCreate(**data)
         pet_data = PetBase(**pet_data)
         user_logic = UserLogic(User)
         pet_logic = PetLogic(Pet)
 
-        await user_logic.create_user(password=user_data.password, user=user_data, db=get_session)
+        await user_logic.create_user(
+            password=user_data.password, user=user_data, db=get_session
+        )
         await pet_logic.create_pet(db=get_session, pet=pet_data)
         order = {
             "id": 5,
             "pet_id": 0,
             "quantity": 0,
             "status": "complete",
-            "complete": True
+            "complete": True,
         }
 
-        response = await client.post('api/v1/store', json=order)
+        response = await client.post("api/v1/store", json=order)
         assert response.status_code == 201
 
-        response = await client.delete('api/v1/store/5')
+        response = await client.delete("api/v1/store/5")
         assert response.status_code == 200
 
     @pytest.mark.asyncio
@@ -154,29 +140,25 @@ class TestCase:
             "last_name": "Grechka",
             "phone": "380502906562",
             "password": "string3004",
-            "login": "string55"
+            "login": "string55",
         }
 
         pet_data = {
             "id": 0,
             "user_id": 1,
             "name": "doggie",
-            "tags": {
-                "id": 0,
-                "name": "string"
-            },
-            "category": {
-                "id": 0,
-                "name": " Dogs"
-            },
-            "status": "available"
+            "tags": {"id": 0, "name": "string"},
+            "category": {"id": 0, "name": " Dogs"},
+            "status": "available",
         }
         user_data = UserCreate(**data)
         pet_data = PetBase(**pet_data)
         user_logic = UserLogic(User)
         pet_logic = PetLogic(Pet)
 
-        await user_logic.create_user(password=user_data.password, user=user_data, db=get_session)
+        await user_logic.create_user(
+            password=user_data.password, user=user_data, db=get_session
+        )
         await pet_logic.create_pet(db=get_session, pet=pet_data)
 
         order = {
@@ -184,15 +166,13 @@ class TestCase:
             "pet_id": 0,
             "quantity": 0,
             "status": "complete",
-            "complete": True
+            "complete": True,
         }
 
-        response = await client.post('api/v1/store', json=order)
+        response = await client.post("api/v1/store", json=order)
         assert response.status_code == 201
 
-        response = await client.get('api/v1/store/5')
+        response = await client.get("api/v1/store/5")
         assert response.status_code == 200
-        assert response.json()['id'] == 5
-        assert response.json()['status'] == "complete"
-
-
+        assert response.json()["id"] == 5
+        assert response.json()["status"] == "complete"

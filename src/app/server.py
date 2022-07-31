@@ -4,9 +4,9 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from app.routers import pet, store, users
 from core.config import settings
-from core.dependencies.logging import Logging
-from core.middlewares.authentication import AuthBackend, AuthenticationMiddleware
-from fastapi import Depends, FastAPI
+from core.middlewares.authentication import (AuthBackend,
+                                             AuthenticationMiddleware)
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 
@@ -39,7 +39,6 @@ def create_app() -> FastAPI:
         description="API",
         version="1.0.0",
         docs_url="/docs",
-        dependencies=[Depends(Logging)],
     )
     init_routers(app=app)
     init_cors(app=app)

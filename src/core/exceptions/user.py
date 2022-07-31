@@ -1,19 +1,20 @@
-from core.exceptions.base import MethodNotAllowed, UnauthorizedException
+from core.exceptions.base import (ConflictException, NotFoundException,
+                                  UnauthorizedException)
 
 
-class UserWithSameEmailExists(MethodNotAllowed):
+class UserWithSameEmailExists(ConflictException):
     message = "User with same email exists"
 
 
-class UserWithSameLoginExists(MethodNotAllowed):
+class UserWithSameLoginExists(ConflictException):
     message = "User with same login exists"
 
 
-class UserWithSamePhoneExists(MethodNotAllowed):
+class UserWithSamePhoneExists(ConflictException):
     message = "User with same phone exists"
 
 
-class UserDoesNotExists(MethodNotAllowed):
+class UserDoesNotExists(NotFoundException):
     message = "User does not exists"
 
 

@@ -1,13 +1,11 @@
-from core.exceptions.base import MethodNotAllowed
+from core.exceptions.base import ConflictException, NotFoundException
+from resources.strings import (OrderAlreadyExistsMessage,
+                               OrderDoesNotFoundMessage)
 
 
-class OrderDoesNotExists(MethodNotAllowed):
-    message = "Order does not exists"
+class OrderDoesNotFound(NotFoundException):
+    message = OrderDoesNotFoundMessage
 
 
-class OrderAlreadyExists(MethodNotAllowed):
-    message = "Order already exists"
-
-
-class StatusDoesNotCorrect(MethodNotAllowed):
-    message = "Status does not correct"
+class OrderAlreadyExists(ConflictException):
+    message = OrderAlreadyExistsMessage

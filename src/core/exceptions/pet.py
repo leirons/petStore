@@ -1,9 +1,10 @@
-from core.exceptions.base import MethodNotAllowed
+from core.exceptions.base import ConflictException, NotFoundException
+from resources.strings import PetAlreadyExistsMessage, PetDoesNotFoundMessage
 
 
-class PetDoesNotExists(MethodNotAllowed):
-    message = "Pet does not exists"
+class PetDoesNotFound(NotFoundException):
+    message = PetDoesNotFoundMessage
 
 
-class PetAlreadyexists(MethodNotAllowed):
-    message = "Pet with this id already exists"
+class PetAlreadyExists(ConflictException):
+    message = PetAlreadyExistsMessage

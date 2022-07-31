@@ -2,9 +2,8 @@ from typing import Optional, Tuple
 
 import jwt
 from starlette.authentication import AuthenticationBackend
-from starlette.middleware.authentication import (
-    AuthenticationMiddleware as BaseAuthenticationMiddleware,
-)
+from starlette.middleware.authentication import \
+    AuthenticationMiddleware as BaseAuthenticationMiddleware
 from starlette.requests import HTTPConnection
 
 from core.config import settings
@@ -13,7 +12,7 @@ from core.schemes import CurrentUser
 
 class AuthBackend(AuthenticationBackend):
     async def authenticate(
-            self, conn: HTTPConnection
+        self, conn: HTTPConnection
     ) -> Tuple[bool, Optional[CurrentUser]]:
         current_user = CurrentUser()
         authorization: str = conn.headers.get("Authorization")

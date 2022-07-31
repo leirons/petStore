@@ -1,5 +1,5 @@
-from locust import HttpUser, task, between
 from faker import Faker
+from locust import HttpUser, between, task
 
 
 class PerformanceTests(HttpUser):
@@ -14,7 +14,7 @@ class PerformanceTests(HttpUser):
             "email": fake.email(),
             "first_name": "Ivan",
             "last_name": "Grechka",
-            "phone": fake.phone_number()
+            "phone": fake.phone_number(),
         }
-        headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
+        headers = {"Accept": "application/json", "Content-Type": "application/json"}
         self.client.post("user", headers=headers, json=data)

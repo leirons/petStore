@@ -1,9 +1,9 @@
 import unittest
+
 from src.app.services.user import validate
 
 
 class ValidationTestCase(unittest.TestCase):
-
     def test_one(self):
         res = validate.validate_email("grecig1gmail.com")
         self.assertEqual(res, None)
@@ -25,5 +25,5 @@ class ValidationTestCase(unittest.TestCase):
         self.assertEqual(res.string, "grecig23123@gmail.com")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -57,3 +57,9 @@ class InternalServerError(CustomException):
     code = HTTPStatus.INTERNAL_SERVER_ERROR
     error_code = HTTPStatus.INTERNAL_SERVER_ERROR
     message = HTTPStatus.INTERNAL_SERVER_ERROR.description
+
+
+class ConflictException(CustomException):
+    code = HTTPStatus.CONFLICT
+    error_code = HTTPStatus.CONFLICT
+    message = HTTPStatus.CONFLICT.description

@@ -5,12 +5,9 @@ from sqlalchemy.orm.exc import UnmappedInstanceError
 from app.services.user import schemes
 from core.auth import AuthHandler
 from core.exceptions.server import ServerError
-from core.exceptions.user import (
-    UserDoesNotExists,
-    UserWithSameEmailExists,
-    UserWithSameLoginExists,
-    UserWithSamePhoneExists,
-)
+from core.exceptions.user import (UserDoesNotExists, UserWithSameEmailExists,
+                                  UserWithSameLoginExists,
+                                  UserWithSamePhoneExists)
 from core.repository.base import BaseRepo
 
 
