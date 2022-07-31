@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from app.schemes import Message
 from app.services.user import schemes
 from app.services.user.logic import UserLogic
-from app.services.user.models import User
+from app.services.user.models import Users
 from core import auth
 from core.cache.backend import RedisBackend
 from core.cache.cache import CacheManager
@@ -15,7 +15,7 @@ from core.exceptions.user import PasswordOrLoginDoesNotMatch
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 
 router = APIRouter()
-logic = UserLogic(model=User)
+logic = UserLogic(model=Users)
 auth_handler = auth.AuthHandler()
 
 cache_manager = CacheManager(backend=RedisBackend(), key_maker=CustomKeyMaker())

@@ -61,9 +61,8 @@ def custom_openapi():
         {"name": "store", "description": "Access to Petstore orders"},
     ]
     openapi_schema = get_openapi(
-        title="Custom title",
-        version="2.5.0",
-        description="This is a very custom OpenAPI schema",
+        title="Petstore",
+        version="1.0",
         routes=app.routes,
     )
     openapi_schema["tags"] = tags_desc_list

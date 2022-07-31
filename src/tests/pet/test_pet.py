@@ -22,17 +22,26 @@ class TestCase:
         data = UserCreate(**data)
         user_logic = UserLogic(User)
 
-        await user_logic.create_user(password=data.password, user=data, db=get_session)
-
+        res = await user_logic.create_user(password=data.password, user=data, db=get_session)
+        print(res)
         pet_data = {
             "id": 0,
             "user_id": 1,
             "name": "doggie",
-            "tags": {"id": 0, "name": "string"},
             "category": {"id": 0, "name": " Dogs"},
             "status": "available",
         }
-        response = await client.post("api/v1/pet/", json=pet_data)
+        login_data = {
+            "login": "string55",
+            "password": 'string3004'
+        }
+        response = await client.post("api/v1/user/login", json=login_data)
+        print(response.text)
+        assert response.status_code == 200
+
+        headers = {}
+        headers['Authorization'] = f"Bearer {response.json().get('token')}"
+        response = await client.post("api/v1/pet", json=pet_data, headers=headers)
         assert response.status_code == 201
 
     @pytest.mark.asyncio
@@ -54,14 +63,24 @@ class TestCase:
             "id": 0,
             "user_id": 1,
             "name": "doggie",
-            "tags": {"id": 0, "name": "string"},
             "category": {"id": 0, "name": " Dogs"},
             "status": "available",
         }
-        response = await client.post("api/v1/pet/", json=pet_data)
+        login_data = {
+            "login": "string55",
+            "password": 'string3004'
+        }
+        response = await client.post("api/v1/user/login", json=login_data)
+        print(response.text)
+        assert response.status_code == 200
+
+        headers = {}
+        headers['Authorization'] = f"Bearer {response.json().get('token')}"
+
+        response = await client.post("api/v1/pet", json=pet_data, headers=headers)
         assert response.status_code == 201
 
-        response = await client.delete("api/v1/pet/0")
+        response = await client.delete("api/v1/pet/0", headers=headers)
         assert response.status_code == 200
 
     @pytest.mark.asyncio
@@ -83,14 +102,24 @@ class TestCase:
             "id": 0,
             "user_id": 1,
             "name": "doggie",
-            "tags": {"id": 0, "name": "string"},
             "category": {"id": 0, "name": " Dogs"},
             "status": "available",
         }
-        response = await client.post("api/v1/pet/", json=pet_data)
+        login_data = {
+            "login": "string55",
+            "password": 'string3004'
+        }
+        response = await client.post("api/v1/user/login", json=login_data)
+        print(response.text)
+        assert response.status_code == 200
+
+        headers = {}
+        headers['Authorization'] = f"Bearer {response.json().get('token')}"
+
+        response = await client.post("api/v1/pet", json=pet_data, headers=headers)
         assert response.status_code == 201
 
-        response = await client.get("api/v1/pet/0")
+        response = await client.get("api/v1/pet/0", headers=headers)
         assert response.status_code == 200
 
     @pytest.mark.asyncio
@@ -112,14 +141,25 @@ class TestCase:
             "id": 0,
             "user_id": 1,
             "name": "doggie",
-            "tags": {"id": 0, "name": "string"},
             "category": {"id": 0, "name": " Dogs"},
             "status": "available",
         }
-        response = await client.post("api/v1/pet/", json=pet_data)
+
+        login_data = {
+            "login": "string55",
+            "password": 'string3004'
+        }
+        response = await client.post("api/v1/user/login", json=login_data)
+        print(response.text)
+        assert response.status_code == 200
+
+        headers = {}
+        headers['Authorization'] = f"Bearer {response.json().get('token')}"
+
+        response = await client.post("api/v1/pet", json=pet_data, headers=headers)
         assert response.status_code == 201
 
-        response = await client.get("api/v1/pet/find_by_status?status=available")
+        response = await client.get("api/v1/pet/find_by_status?status=available",headers=headers)
         assert response.status_code == 200
         assert response.json()[0]["id"] == 0
         assert response.json()[0]["user_id"] == 1
@@ -145,14 +185,27 @@ class TestCase:
             "id": 0,
             "user_id": 1,
             "name": "doggie",
-            "tags": {"id": 0, "name": "string"},
             "category": {"id": 0, "name": " Dogs"},
             "status": "pending",
         }
-        response = await client.post("api/v1/pet/", json=pet_data)
+
+        login_data = {
+            "login": "string55",
+            "password": 'string3004'
+        }
+        response = await client.post("api/v1/user/login", json=login_data)
+        print(response.text)
+        assert response.status_code == 200
+
+        headers = {}
+        headers['Authorization'] = f"Bearer {response.json().get('token')}"
+
+        response = await client.post("api/v1/pet", json=pet_data, headers=headers)
+        print(response.json())
         assert response.status_code == 201
 
-        response = await client.get("api/v1/pet/find_by_status?status=pending")
+        response = await client.get("api/v1/pet/find_by_status?status=pending", headers=headers)
+        print(response.json())
         assert response.status_code == 200
         assert response.json()[0]["id"] == 0
         assert response.json()[0]["user_id"] == 1
@@ -178,14 +231,24 @@ class TestCase:
             "id": 0,
             "user_id": 1,
             "name": "doggie",
-            "tags": {"id": 0, "name": "string"},
             "category": {"id": 0, "name": " Dogs"},
             "status": "sold",
         }
-        response = await client.post("api/v1/pet/", json=pet_data)
+        login_data = {
+            "login": "string55",
+            "password": 'string3004'
+        }
+        response = await client.post("api/v1/user/login", json=login_data)
+        print(response.text)
+        assert response.status_code == 200
+
+        headers = {}
+        headers['Authorization'] = f"Bearer {response.json().get('token')}"
+
+        response = await client.post("api/v1/pet", json=pet_data, headers=headers)
         assert response.status_code == 201
 
-        response = await client.get("api/v1/pet/find_by_status?status=sold")
+        response = await client.get("api/v1/pet/find_by_status?status=sold", headers=headers)
         assert response.status_code == 200
         assert response.json()[0]["id"] == 0
         assert response.json()[0]["user_id"] == 1
@@ -211,14 +274,25 @@ class TestCase:
             "id": 0,
             "user_id": 1,
             "name": "doggie",
-            "tags": {"id": 0, "name": "string"},
             "category": {"id": 0, "name": " Dogs"},
             "status": "pending",
         }
-        response = await client.post("api/v1/pet/", json=pet_data)
+
+        login_data = {
+            "login": "string55",
+            "password": 'string3004'
+        }
+        response = await client.post("api/v1/user/login", json=login_data)
+        print(response.text)
+        assert response.status_code == 200
+
+        headers = {}
+        headers['Authorization'] = f"Bearer {response.json().get('token')}"
+
+        response = await client.post("api/v1/pet", json=pet_data, headers=headers)
         assert response.status_code == 201
 
-        response = await client.get("api/v1/pet/find_by_status?status=sold")
+        response = await client.get("api/v1/pet/find_by_status?status=sold", headers=headers)
         assert response.status_code == 200
         assert response.json() == []
 
@@ -245,12 +319,24 @@ class TestCase:
             "category": {"id": 0, "name": " Dogs"},
             "status": "pending",
         }
-        response = await client.post("api/v1/pet/", json=pet_data)
+
+        login_data = {
+            "login": "string55",
+            "password": 'string3004'
+        }
+        response = await client.post("api/v1/user/login", json=login_data)
+        print(response.text)
+        assert response.status_code == 200
+
+        headers = {}
+        headers['Authorization'] = f"Bearer {response.json().get('token')}"
+
+        response = await client.post("api/v1/pet", json=pet_data, headers=headers)
         assert response.status_code == 201
 
         pet_data["name"] = "cat"
-        response = await client.put("api/v1/pet/0", json=pet_data)
-        assert response.status_code == 200
+        response = await client.put("api/v1/pet/0", json=pet_data,headers=headers)
+        assert response.status_code == 202
         assert response.json()["name"] == "cat"
 
     @pytest.mark.asyncio
@@ -276,6 +362,17 @@ class TestCase:
             "category": {"id": 0, "name": " Dogs"},
             "status": "pending",
         }
-        response = await client.post("api/v1/pet/", json=pet_data)
+        login_data = {
+            "login": "string55",
+            "password": 'string3004'
+        }
+        response = await client.post("api/v1/user/login", json=login_data)
+        print(response.text)
+        assert response.status_code == 200
+
+        headers = {}
+        headers['Authorization'] = f"Bearer {response.json().get('token')}"
+
+        response = await client.post("api/v1/pet", json=pet_data, headers=headers)
         assert response.status_code == 404
         assert response.json()["detail"] == "User does not exists"

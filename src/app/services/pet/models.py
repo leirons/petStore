@@ -13,5 +13,5 @@ class Pet(Base):
     category = Column(JSON)
     store = relationship("Store", back_populates="pet")
 
-    user_id = Column(Integer, ForeignKey("user.id"))
-    user = relationship("User", back_populates="pet")
+    user_id = Column(Integer, ForeignKey("users.id"))
+    user = relationship("Users", back_populates="pet")

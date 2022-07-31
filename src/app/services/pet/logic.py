@@ -1,4 +1,4 @@
-from sqlalchemy import String, select
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.services.pet import schemes
@@ -27,13 +27,3 @@ class PetLogic(BaseRepo):
         query = select(self.model).where(self.model.status == status)
         r = await db.execute(query)
         return r.scalars().all()
-
-    async def find_by_tags(self, db: Session, tags: list):
-        lst = []
-        for tag in tags:
-            query = select(self.model).where(
-                self.model.tags["name"].astext.cast(String) == tag
-            )
-            r = await db.execute(query)
-            lst.extend(r.scalars().all())
-        return [i.__dict__ for i in lst]

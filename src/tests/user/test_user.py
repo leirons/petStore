@@ -85,7 +85,7 @@ class TestCase:
         response = await client.post("api/v1/user", json=data)
         assert response.status_code == 201
         response = await client.delete("api/v1/user/string")
-        assert response.status_code == 200
+        assert response.status_code == 404
 
     @pytest.mark.asyncio
     async def test_login(self, client: AsyncClient):

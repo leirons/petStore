@@ -7,7 +7,7 @@ from app.services.pet import schemes
 from app.services.pet.logic import PetLogic
 from app.services.pet.models import Pet
 from app.services.user.logic import UserLogic
-from app.services.user.models import User
+from app.services.user.models import Users
 from core import auth
 from core.cache.backend import RedisBackend
 from core.cache.cache import CacheManager
@@ -20,7 +20,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 cache_manager = CacheManager(backend=RedisBackend(), key_maker=CustomKeyMaker())
 router = APIRouter()
 logic = PetLogic(model=Pet)
-user_logic = UserLogic(model=User)
+user_logic = UserLogic(model=Users)
 
 auth_handler = auth.AuthHandler()
 
@@ -77,10 +77,10 @@ async def find_by_status(
 
 
 @router.post(
-    "/pet/",
+    "/pet",
     tags=["pet"],
     name="Add new pet to the store",
-    status_code=status.HTTP_200_OK,
+    status_code=status.HTTP_201_CREATED,
     responses={409: {"model": Message}, 404: {"model": Message}},
 )
 async def create_pet(
