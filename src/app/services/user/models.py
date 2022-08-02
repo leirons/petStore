@@ -8,7 +8,7 @@ from core.db.sessions import Base
 class Users(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True)
-    login = Column(String, index=True, unique=True)
+    username = Column(String, index=True, unique=True)
     email = Column(String, unique=True)
     password = Column(String)
     phone = Column(String, unique=True)

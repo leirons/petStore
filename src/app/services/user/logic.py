@@ -27,7 +27,7 @@ class UserLogic(BaseRepo):
         return r.scalars().first()
 
     async def get_user_by_login(self, db: Session, username: str):
-        query = select(self.model).where(self.model.login == username)
+        query = select(self.model).where(self.model.username == username)
         r = await db.execute(query)
         return r.scalars().first()
 
@@ -40,7 +40,7 @@ class UserLogic(BaseRepo):
     async def delete_user(self, db: Session, username: str):
         if not await self.get_user_by_login(username=username, db=db):
             return False, UserDoesNotExists
-        record = select(self.model).where(self.model.login == username)
+        record = select(self.model).where(self.model.username == username)
         record = await db.execute(record)
         record = record.scalars().first()
         try:
@@ -57,7 +57,7 @@ class UserLogic(BaseRepo):
         try:
             if await self.check_email(user.email, db):
                 return False, UserWithSameEmailExists
-            elif await self.check_login(user.login, db):
+            elif await self.check_login(user.username, db):
                 return False, UserWithSameLoginExists
             elif await self.check_phone(user.phone, db):
                 return False, UserWithSamePhoneExists
@@ -92,14 +92,14 @@ class UserLogic(BaseRepo):
 
     async def patch_user(self, db: Session, user: schemes.UserPatch, username: str):
         try:
-            db_user = select(self.model).where(self.model.login == username)
+            db_user = select(self.model).where(self.model.username == username)
             db_user = await db.execute(db_user)
             db_user = db_user.scalars().first()
             res = await self.check_login(login=username, db=db)
             if not res:
                 return False, UserDoesNotExists
-            if user.login is not None:
-                db_user.login = user.login
+            if user.username is not None:
+                db_user.login = user.username
             if user.password is not None:
                 hashed_password = self.auth_handler.get_passwords_hash(user.password)
                 db_user.password = hashed_password

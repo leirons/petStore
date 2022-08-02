@@ -18,12 +18,12 @@ repos:
         args:
         - --recursive
         - --in-place
-        - --remove-all-unused-imports
         - --remove-unused-variables
         - --expand-star-imports
         - --exclude
         - __init__.py
         - --remove-duplicate-keys
+        exclude: ^migrations/
 ci:
     autofix_commit_msg: 🎨 [pre-commit.ci] Auto format from pre-commit.com hooks
     autoupdate_commit_msg: ⬆ [pre-commit.ci] pre-commit autoupdate

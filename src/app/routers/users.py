@@ -61,7 +61,7 @@ async def create_user(user: schemes.UserCreate, db: Session = Depends(get_db)):
     status_code=status.HTTP_200_OK,
 )
 async def login(user: schemes.UserToken, db: Session = Depends(get_db)):
-    user_old = await logic.get_user_by_login(db, user.login)
+    user_old = await logic.get_user_by_login(db, user.username)
     if user_old and auth_handler.verify_password(
         plain_password=user.password, hash_password=user_old.password
     ):
@@ -76,7 +76,7 @@ async def login(user: schemes.UserToken, db: Session = Depends(get_db)):
 @router.delete(
     "/user/{username}",
     tags=["user"],
-    responses={404: {"model": Message}},
+    responses=  {404: {"model": Message}},
     status_code=status.HTTP_200_OK,
 )
 async def delete_user(username: str, request: Request, db: Session = Depends(get_db)):

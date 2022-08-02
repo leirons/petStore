@@ -32,6 +32,7 @@ auth_handler = auth.AuthHandler()
     name="Get list of all pets",
     status_code=status.HTTP_200_OK,
     response_model=List[schemes.PetBase],
+    response_model_exclude={"category":{"id"}}
 )
 async def get_list(
     db: Session = Depends(get_db), user=Depends(auth_handler.auth_wrapper)
@@ -50,9 +51,10 @@ async def get_list(
     tags=["pet"],
     response_model=List[schemes.PetBase],
     status_code=status.HTTP_200_OK,
+    response_model_exclude={"category": {"id"}}
 )
 async def find_by_status(
-    status_: str = Query(
+    status: str = Query(
         examples={
             "available": {
                 "name": "available",
@@ -69,7 +71,7 @@ async def find_by_status(
     db: Session = Depends(get_db),
     user=Depends(auth_handler.auth_wrapper),
 ):
-    res = await logic.find_by_status(status=status_, db=db)
+    res = await logic.find_by_status(status=status, db=db)
     lst_ = []
     for d in res:
         lst_.append(d.__dict__)
@@ -111,6 +113,7 @@ async def create_pet(
     responses={
         409: {"model": Message},
     },
+    response_model_exclude={"category": {"id"}}
 )
 async def find_by_id(
     pet_id: int, db: Session = Depends(get_db), user=Depends(auth_handler.auth_wrapper)
@@ -148,25 +151,27 @@ async def delete_by_id(
     tags=["pet"],
     name="Update an existing pet",
     status_code=status.HTTP_202_ACCEPTED,
-    response_model=schemes.PetBase,
+    response_model=schemes.PetPut,
     responses={409: {"model": Message}, 404: {"model": Message}},
+    response_model_exclude={"category": {"id"}}
 )
 async def update_pet(
     pet_id: int,
-    pet: schemes.PetBase,
+    pet: schemes.PetPut,
     db: Session = Depends(get_db),
     user=Depends(auth_handler.auth_wrapper),
 ):
     p = await logic.get_by_id(id=pet_id, session=db)
+
+    if not p:
+        raise HTTPException(
+            status_code=PetDoesNotFound.code, detail=PetDoesNotFound.message
+        )
 
     if not await user_logic.get_by_id(id=pet.user_id, session=db):
         raise HTTPException(
             status_code=UserDoesNotExists.code, detail=UserDoesNotExists.message
         )
 
-    if not p:
-        raise HTTPException(
-            status_code=PetDoesNotFound.code, detail=PetDoesNotFound.message
-        )
-    await logic.update_by_id(id=pet.id, params=pet.dict(), session=db)
+    await logic.update_by_id(id=pet_id, params=pet.dict(), session=db)
     return pet

@@ -20,15 +20,15 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str = "string355"
-    login: str = "string355"
+    username: str = "string355"
 
-    @validator("login")
-    def validate_login(cls, login):
-        if len(login) > 30:
-            raise ValueError("Login should not have more than 30 symbols ")
-        elif len(login) < 8:
-            raise ValueError("Login should have more than 8 symbols ")
-        return login
+    @validator("username")
+    def validate_login(cls, username):
+        if len(username) > 30:
+            raise ValueError("Username should not have more than 30 symbols ")
+        elif len(username) < 8:
+            raise ValueError("Username should have more than 8 symbols ")
+        return username
 
     @validator("password")
     def validate_password(cls, password):
@@ -41,7 +41,7 @@ class UserCreate(UserBase):
 
 class User(UserBase):
     id: int
-    login: str
+    username: str
     password: str
 
     class Config:
@@ -49,7 +49,7 @@ class User(UserBase):
 
 
 class UserToken(BaseModel):
-    login: str = "string355"
+    username: str = "string355"
     password: str = "string355"
 
     class Config:
@@ -57,5 +57,5 @@ class UserToken(BaseModel):
 
 
 class UserPatch(BaseModel):
-    login: Optional[Union[str, None]] = "string355"
+    username: Optional[Union[str, None]] = "string355"
     password: Optional[Union[str, None]] = "string355"

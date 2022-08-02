@@ -64,6 +64,7 @@ def custom_openapi():
         title="Petstore",
         version="1.0",
         routes=app.routes,
+        description="This is a sample Pet Store Server ",
     )
     openapi_schema["tags"] = tags_desc_list
     app.openapi_schema = openapi_schema
