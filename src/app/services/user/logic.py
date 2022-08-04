@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.exc import UnmappedInstanceError
 
@@ -90,6 +90,7 @@ class UserLogic(BaseRepo):
             return True
         return False
 
+
     async def patch_user(self, db: Session, user: schemes.UserPatch, username: str):
         try:
             db_user = select(self.model).where(self.model.username == username)
@@ -98,13 +99,14 @@ class UserLogic(BaseRepo):
             res = await self.check_login(login=username, db=db)
             if not res:
                 return False, UserDoesNotExists
-            if user.username is not None:
-                db_user.login = user.username
             if user.password is not None:
                 hashed_password = self.auth_handler.get_passwords_hash(user.password)
-                db_user.password = hashed_password
+                user.password = hashed_password
+
+            query = update(self.model).where(self.model.username == username).values(**user.dict())
+            await db.execute(query)
             await db.commit()
-            await db.refresh(db_user)
-        except Exception:
-            return ServerError
-        return True, db_user
+        except Exception as exc:
+            print(exc)
+            return False,ServerError
+        return True, user

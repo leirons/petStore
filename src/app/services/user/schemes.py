@@ -1,4 +1,3 @@
-from typing import Optional, Union
 
 from pydantic import BaseModel, validator
 
@@ -56,6 +55,6 @@ class UserToken(BaseModel):
         orm_mode = True
 
 
-class UserPatch(BaseModel):
-    username: Optional[Union[str, None]] = "string355"
-    password: Optional[Union[str, None]] = "string355"
+class UserPatch(UserCreate):
+    username: str = "string355"
+    password: str = "string355"
