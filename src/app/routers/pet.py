@@ -1,6 +1,8 @@
+from select import select
 from typing import List
 
-from sqlalchemy.orm import Session
+from sqlalchemy import inspect
+from sqlalchemy.orm import Session, selectinload
 
 from app.schemes import Message
 from app.services.pet import schemes
@@ -8,6 +10,7 @@ from app.services.pet.logic import PetLogic
 from app.services.pet.models import Pet
 from app.services.user.logic import UserLogic
 from app.services.user.models import Users
+from app.utils import object_as_dict
 from core import auth
 from core.cache.backend import RedisBackend
 from core.cache.cache import CacheManager
@@ -25,26 +28,29 @@ user_logic = UserLogic(model=Users)
 auth_handler = auth.AuthHandler()
 
 
-@cache_manager.cached(prefix="get_pet_list")
 @router.get(
-    "/pet/pet_list",
+    "/pet/find_by_tag",
     tags=["pet"],
-    name="Get list of all pets",
-    status_code=status.HTTP_200_OK,
     response_model=List[schemes.PetBase],
-    response_model_exclude={"category":{"id"}}
+    status_code=status.HTTP_200_OK,
+    response_model_exclude={"category": {"id"}}
 )
-async def get_list(
-    db: Session = Depends(get_db), user=Depends(auth_handler.auth_wrapper)
+async def find_by_tag(
+    db: Session = Depends(get_db),
+    user=Depends(auth_handler.auth_wrapper),
+    tag:str = None
 ):
-    pets = await logic.get_all(session=db)
+    res = await logic.find_by_tag(tag=tag, db=db)
     lst_ = []
-    if not pets:
-        return lst_
-    for pet in pets:
-        lst_.append(pet.__dict__)
+    tags = []
+    for pet in res:
+        for tag in pet.tag:
+            tags.append(object_as_dict(tag))
+        pet = pet.__dict__
+        pet['tag'] = tags
+        lst_.append(pet)
+        tags = []
     return lst_
-
 
 @router.get(
     "/pet/find_by_status",
@@ -73,8 +79,14 @@ async def find_by_status(
 ):
     res = await logic.find_by_status(status=status, db=db)
     lst_ = []
-    for d in res:
-        lst_.append(d.__dict__)
+    tags = []
+    for pet in res:
+        for tag in pet.tag:
+            tags.append(object_as_dict(tag))
+        pet = pet.__dict__
+        pet['tag'] = tags
+        lst_.append(pet)
+        tags = []
     return lst_
 
 
@@ -101,8 +113,8 @@ async def create_pet(
             status_code=UserDoesNotExists.code, detail=UserDoesNotExists.message
         )
 
-    pet = await logic.create_pet(pet=pet, db=db)
-    return pet
+    p = await logic.create_pet(pet=pet, db=db)
+    return p
 
 
 @router.get(
@@ -115,16 +127,24 @@ async def create_pet(
     },
     response_model_exclude={"category": {"id"}}
 )
+
+
 async def find_by_id(
     pet_id: int, db: Session = Depends(get_db), user=Depends(auth_handler.auth_wrapper)
 ):
-    pet = await logic.get_by_id(session=db, id=pet_id)
+    pet = await logic.get_pet_by_id(db=db, pet_id=pet_id)
+
     if not pet:
         raise HTTPException(
             status_code=PetDoesNotFound.code, detail=PetDoesNotFound.message
         )
-    return pet.__dict__
 
+    tags = []
+    for tag in pet.tag:
+        tags.append(object_as_dict(tag))
+    pet = pet.__dict__
+    pet['tag'] = tags
+    return pet
 
 @router.delete(
     "/pet/{pet_id}",
@@ -173,5 +193,5 @@ async def update_pet(
             status_code=UserDoesNotExists.code, detail=UserDoesNotExists.message
         )
 
-    await logic.update_by_id(id=pet_id, params=pet.dict(), session=db)
+    await logic.update_by_id(id=pet_id, pet=pet, db=db)
     return pet

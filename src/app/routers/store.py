@@ -8,6 +8,7 @@ from app.services.pet.models import Pet
 from app.services.store import schemes
 from app.services.store.logic import StoreLogic
 from app.services.store.models import Store
+
 from core import auth
 from core.cache.backend import RedisBackend
 from core.cache.cache import CacheManager
@@ -15,6 +16,7 @@ from core.cache.key_marker import CustomKeyMaker
 from core.db.sessions import get_db
 from core.exceptions.pet import PetDoesNotFound
 from core.exceptions.store import OrderAlreadyExists, OrderDoesNotFound
+
 from fastapi import APIRouter, Depends, HTTPException, status
 
 cache_manager = CacheManager(backend=RedisBackend(), key_maker=CustomKeyMaker())
@@ -33,7 +35,7 @@ auth_handler = auth.AuthHandler()
 )
 @cache_manager.cached(prefix="get_order_list")
 async def get_list(
-    db: Session = Depends(get_db), user=Depends(auth_handler.auth_wrapper)
+        db: Session = Depends(get_db), user=Depends(auth_handler.auth_wrapper)
 ):
     orders = await logic.get_all(session=db)
     lst_ = []
@@ -51,7 +53,7 @@ async def get_list(
     status_code=status.HTTP_200_OK,
 )
 async def find_by_id(
-    db: Session = Depends(get_db), user=Depends(auth_handler.auth_wrapper)
+        db: Session = Depends(get_db), user=Depends(auth_handler.auth_wrapper)
 ):
     res = await logic.get_inventory(db=db)
     return res
@@ -68,9 +70,9 @@ async def find_by_id(
     },
 )
 async def create_pet(
-    order: schemes.Order,
-    db: Session = Depends(get_db),
-    user=Depends(auth_handler.auth_wrapper),
+        order: schemes.Order,
+        db: Session = Depends(get_db),
+        user=Depends(auth_handler.auth_wrapper),
 ):
     o = await logic.get_by_id(id=order.id, session=db)
     if o:
@@ -98,9 +100,9 @@ async def create_pet(
     },
 )
 async def delete_by_id(
-    order_id: int,
-    db: Session = Depends(get_db),
-    user=Depends(auth_handler.auth_wrapper),
+        order_id: int,
+        db: Session = Depends(get_db),
+        user=Depends(auth_handler.auth_wrapper),
 ):
     order = await logic.get_by_id(id=order_id, session=db)
     if not order:
@@ -121,9 +123,9 @@ async def delete_by_id(
     },
 )
 async def find_by_id(
-    order_id: int,
-    db: Session = Depends(get_db),
-    user=Depends(auth_handler.auth_wrapper),
+        order_id: int,
+        db: Session = Depends(get_db),
+        user=Depends(auth_handler.auth_wrapper),
 ):
     order = await logic.get_by_id(session=db, id=order_id)
     if not order:

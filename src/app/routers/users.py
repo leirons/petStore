@@ -1,5 +1,6 @@
 from typing import List
 
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
 
 from app.schemes import Message
@@ -12,7 +13,6 @@ from core.cache.cache import CacheManager
 from core.cache.key_marker import CustomKeyMaker
 from core.db.sessions import get_db
 from core.exceptions.user import PasswordOrLoginDoesNotMatch
-from fastapi import APIRouter, Depends, HTTPException, Request, status
 
 router = APIRouter()
 logic = UserLogic(model=Users)
@@ -63,7 +63,7 @@ async def create_user(user: schemes.UserCreate, db: Session = Depends(get_db)):
 async def login(user: schemes.UserToken, db: Session = Depends(get_db)):
     user_old = await logic.get_user_by_login(db, user.username)
     if user_old and auth_handler.verify_password(
-        plain_password=user.password, hash_password=user_old.password
+            plain_password=user.password, hash_password=user_old.password
     ):
         token = auth_handler.encode_token(user_old.id)
         return {"token": token}
@@ -76,7 +76,7 @@ async def login(user: schemes.UserToken, db: Session = Depends(get_db)):
 @router.delete(
     "/user/{username}",
     tags=["user"],
-    responses=  {404: {"model": Message}},
+    responses={404: {"model": Message}},
     status_code=status.HTTP_200_OK,
 )
 async def delete_user(username: str, request: Request, db: Session = Depends(get_db)):
@@ -90,9 +90,9 @@ async def delete_user(username: str, request: Request, db: Session = Depends(get
     "/user", response_model=schemes.User, tags=["user"], status_code=status.HTTP_200_OK
 )
 async def get_myself(
-    request: Request,
-    user=Depends(auth_handler.auth_wrapper),
-    db: Session = Depends(get_db),
+        request: Request,
+        user=Depends(auth_handler.auth_wrapper),
+        db: Session = Depends(get_db),
 ):
     res = await logic.get_user_by_id(db, user_id=request.user.id)
     return res
@@ -105,7 +105,7 @@ async def get_myself(
     status_code=status.HTTP_200_OK,
 )
 async def patch_user(
-    username: str, user: schemes.UserPatch, db: Session = Depends(get_db)
+        username: str, user: schemes.UserPatch, db: Session = Depends(get_db)
 ):
     operation, res = await logic.patch_user(db=db, user=user, username=username)
     if not operation:

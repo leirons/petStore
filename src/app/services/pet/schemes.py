@@ -1,9 +1,15 @@
+from typing import List
+
 from pydantic import BaseModel, validator, create_model
 
 
 class Category(BaseModel):
     id: int
-    name: str = " Dogs"
+    name: str = "Dogs"
+
+
+class Tag(BaseModel):
+    name: str = "Tag"
 
 
 def exclude_id(baseclass, to_exclude: list):
@@ -20,6 +26,7 @@ class PetBase(BaseModel):
     name: str = "doggie"
     category: Category
     status: str = "available"
+    tag: List[Tag]
 
     @validator("status")
     def validate_status(cls, status):
@@ -35,6 +42,7 @@ class PetPut(BaseModel):
     name: str = "doggie"
     category: Category
     status: str = "available"
+    tag: List[Tag]
 
     @validator("status")
     def validate_status(cls, status):

@@ -13,6 +13,7 @@ class BaseRepo(Generic[ModelType]):
 
     async def get_by_id(self, id: int, session) -> Optional[ModelType]:
         query = select(self.model).where(self.model.id == id)
+        print(str(query))
         data = await session.execute(query)
         return data.scalars().first()
 
