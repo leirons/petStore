@@ -10,7 +10,7 @@ class Tag(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String)
 
-    pet_id = Column(Integer, ForeignKey("pet.id"))
+    pet_id = Column(Integer, ForeignKey("pet.id",ondelete="CASCADE"))
     pet_tag = relationship("Pet", back_populates='tag', cascade="all,delete")
 
 

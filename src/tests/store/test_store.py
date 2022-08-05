@@ -30,6 +30,11 @@ class TestCase:
             "tags": {"id": 0, "name": "string"},
             "category": {"id": 0, "name": " Dogs"},
             "status": "available",
+            "tag": [
+                {
+                    "name": "Tag"
+                }
+            ]
         }
         user_data = UserCreate(**data)
         pet_data = PetBase(**pet_data)
@@ -44,7 +49,6 @@ class TestCase:
             "password": 'string3004'
         }
         response = await client.post("api/v1/user/login", json=login_data)
-        print(response.text)
         assert response.status_code == 200
 
         headers = {}
@@ -80,6 +84,11 @@ class TestCase:
             "tags": {"id": 0, "name": "string"},
             "category": {"id": 0, "name": " Dogs"},
             "status": "available",
+            "tag": [
+                {
+                    "name": "Tag"
+                }
+            ]
         }
         user_data = UserCreate(**data)
         pet_data = PetBase(**pet_data)
@@ -102,7 +111,6 @@ class TestCase:
             "password": 'string3004'
         }
         response = await client.post("api/v1/user/login", json=login_data)
-        print(response.text)
         assert response.status_code == 200
 
         headers = {}
@@ -129,6 +137,11 @@ class TestCase:
             "tags": {"id": 0, "name": "string"},
             "category": {"id": 0, "name": " Dogs"},
             "status": "available",
+            "tag": [
+                {
+                    "name": "Tag"
+                }
+            ]
         }
         user_data = UserCreate(**data)
         pet_data = PetBase(**pet_data)
@@ -152,7 +165,6 @@ class TestCase:
             "password": 'string3004'
         }
         response = await client.post("api/v1/user/login", json=login_data)
-        print(response.text)
         assert response.status_code == 200
 
         headers = {}
@@ -183,6 +195,11 @@ class TestCase:
             "tags": {"id": 0, "name": "string"},
             "category": {"id": 0, "name": " Dogs"},
             "status": "available",
+            "tag": [
+                {
+                    "name": "Tag"
+                }
+            ]
         }
         user_data = UserCreate(**data)
         pet_data = PetBase(**pet_data)
@@ -206,7 +223,6 @@ class TestCase:
             "password": 'string3004'
         }
         response = await client.post("api/v1/user/login", json=login_data)
-        print(response.text)
         assert response.status_code == 200
 
         headers = {}

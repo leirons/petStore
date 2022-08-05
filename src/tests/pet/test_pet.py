@@ -30,13 +30,17 @@ class TestCase:
             "name": "doggie",
             "category": {"id": 0, "name": " Dogs"},
             "status": "available",
+            "tag": [
+                {
+                    "name": "Tag"
+                }
+            ]
         }
         login_data = {
             "login": "string55",
             "password": 'string3004'
         }
         response = await client.post("api/v1/user/login", json=login_data)
-        print(response.text)
         assert response.status_code == 200
 
         headers = {}
@@ -65,13 +69,17 @@ class TestCase:
             "name": "doggie",
             "category": {"id": 0, "name": " Dogs"},
             "status": "available",
+            "tag": [
+                {
+                    "name": "Tag"
+                }
+            ]
         }
         login_data = {
             "login": "string55",
             "password": 'string3004'
         }
         response = await client.post("api/v1/user/login", json=login_data)
-        print(response.text)
         assert response.status_code == 200
 
         headers = {}
@@ -104,13 +112,17 @@ class TestCase:
             "name": "doggie",
             "category": {"id": 0, "name": " Dogs"},
             "status": "available",
+            "tag": [
+                {
+                    "name": "Tag"
+                }
+            ]
         }
         login_data = {
             "login": "string55",
             "password": 'string3004'
         }
         response = await client.post("api/v1/user/login", json=login_data)
-        print(response.text)
         assert response.status_code == 200
 
         headers = {}
@@ -143,6 +155,11 @@ class TestCase:
             "name": "doggie",
             "category": {"id": 0, "name": " Dogs"},
             "status": "available",
+            "tag": [
+                {
+                    "name": "Tag"
+                }
+            ]
         }
 
         login_data = {
@@ -150,7 +167,6 @@ class TestCase:
             "password": 'string3004'
         }
         response = await client.post("api/v1/user/login", json=login_data)
-        print(response.text)
         assert response.status_code == 200
 
         headers = {}
@@ -187,6 +203,11 @@ class TestCase:
             "name": "doggie",
             "category": {"id": 0, "name": " Dogs"},
             "status": "pending",
+            "tag": [
+                {
+                    "name": "Tag"
+                }
+            ]
         }
 
         login_data = {
@@ -194,7 +215,6 @@ class TestCase:
             "password": 'string3004'
         }
         response = await client.post("api/v1/user/login", json=login_data)
-        print(response.text)
         assert response.status_code == 200
 
         headers = {}
@@ -207,8 +227,7 @@ class TestCase:
         assert response.status_code == 200
         assert response.json()[0]["id"] == 0
         assert response.json()[0]["user_id"] == 1
-        # assert response.json()[0]["name"] == "doggie"
-        # assert response.json()[0]["status"] == "pending"
+
 
     @pytest.mark.asyncio
     async def test_update_pet(self, client: AsyncClient, get_session):
@@ -232,6 +251,11 @@ class TestCase:
             "tags": {"id": 0, "name": "string"},
             "category": {"id": 0, "name": " Dogs"},
             "status": "pending",
+            "tag": [
+                {
+                    "name": "Tag"
+                }
+            ]
         }
 
         login_data = {
@@ -239,7 +263,6 @@ class TestCase:
             "password": 'string3004'
         }
         response = await client.post("api/v1/user/login", json=login_data)
-        print(response.text)
         assert response.status_code == 200
 
         headers = {}
@@ -275,13 +298,17 @@ class TestCase:
             "tags": {"id": 0, "name": "string"},
             "category": {"id": 0, "name": " Dogs"},
             "status": "pending",
+            "tag": [
+                {
+                    "name": "Tag"
+                }
+            ]
         }
         login_data = {
             "login": "string55",
             "password": 'string3004'
         }
         response = await client.post("api/v1/user/login", json=login_data)
-        print(response.text)
         assert response.status_code == 200
 
         headers = {}

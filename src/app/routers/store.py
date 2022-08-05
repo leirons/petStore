@@ -1,4 +1,3 @@
-from typing import List
 
 from sqlalchemy.orm import Session
 
@@ -26,33 +25,14 @@ pet_logic = PetLogic(model=Pet)
 auth_handler = auth.AuthHandler()
 
 
-@router.get(
-    "/store/store_list",
-    tags=["store"],
-    name="Get list of all orders",
-    status_code=status.HTTP_200_OK,
-    response_model=List[schemes.Order],
-)
-@cache_manager.cached(prefix="get_order_list")
-async def get_list(
-        db: Session = Depends(get_db), user=Depends(auth_handler.auth_wrapper)
-):
-    orders = await logic.get_all(session=db)
-    lst_ = []
-    if not orders:
-        return lst_
-    for order in orders:
-        lst_.append(order.__dict__)
-    return lst_
-
-
+@cache_manager.cached(prefix="get_order_inventory")
 @router.get(
     "/order/inventory",
     tags=["store"],
     name="Returns pet inventories by status",
     status_code=status.HTTP_200_OK,
 )
-async def find_by_id(
+async def get_inventory(
         db: Session = Depends(get_db), user=Depends(auth_handler.auth_wrapper)
 ):
     res = await logic.get_inventory(db=db)
@@ -69,7 +49,7 @@ async def find_by_id(
         404: {"model": Message},
     },
 )
-async def create_pet(
+async def create_order(
         order: schemes.Order,
         db: Session = Depends(get_db),
         user=Depends(auth_handler.auth_wrapper),
@@ -133,3 +113,27 @@ async def find_by_id(
             detail=OrderDoesNotFound.message, status_code=OrderDoesNotFound.error_code
         )
     return order.__dict__
+
+@router.put(
+    "/store/{order_id}",
+    tags=["store"],
+    name="Update order by id",
+    status_code=status.HTTP_200_OK,
+    responses={
+        404: {"model": Message},
+    },
+)
+async def update_by_id(
+        order: schemes.Order,
+        order_id: int,
+        db: Session = Depends(get_db),
+        user=Depends(auth_handler.auth_wrapper),
+
+):
+    o = await logic.get_by_id(id=order_id, session=db)
+    if not o:
+        raise HTTPException(
+            detail=OrderDoesNotFound.message, status_code=OrderDoesNotFound.error_code
+        )
+    await logic.update_by_id(id=order_id,session=db,params=order.dict())
+    return order.dict()

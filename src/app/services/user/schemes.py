@@ -1,4 +1,3 @@
-
 from pydantic import BaseModel, validator
 
 from app.services.user.validate import validate_email
@@ -17,11 +16,8 @@ class UserBase(BaseModel):
         raise ValueError("Email does not correct")
 
 
-class UserCreate(UserBase):
-    password: str = "string355"
-    username: str = "string355"
-
-    @validator("username")
+class UserCreateValidators(BaseModel):
+    @validator("username",check_fields=False)
     def validate_login(cls, username):
         if len(username) > 30:
             raise ValueError("Username should not have more than 30 symbols ")
@@ -29,13 +25,19 @@ class UserCreate(UserBase):
             raise ValueError("Username should have more than 8 symbols ")
         return username
 
-    @validator("password")
+    @validator("password",check_fields=False)
     def validate_password(cls, password):
         if len(password) > 30:
             raise ValueError("Password should not have more than 30 symbols ")
         elif len(password) < 8:
             raise ValueError("Password should have more than 8 symbols ")
         return password
+
+class UserCreate(UserBase,UserCreateValidators):
+    password: str = "string355"
+    username: str = "string355"
+
+
 
 
 class User(UserBase):
@@ -55,6 +57,6 @@ class UserToken(BaseModel):
         orm_mode = True
 
 
-class UserPatch(UserCreate):
+class UserPatch(UserCreateValidators):
     username: str = "string355"
     password: str = "string355"

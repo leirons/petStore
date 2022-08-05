@@ -1,4 +1,3 @@
-from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
@@ -19,23 +18,6 @@ logic = UserLogic(model=Users)
 auth_handler = auth.AuthHandler()
 
 cache_manager = CacheManager(backend=RedisBackend(), key_maker=CustomKeyMaker())
-
-
-@router.get(
-    "/user/user_list",
-    tags=["user"],
-    name="Get list of all users",
-    status_code=status.HTTP_200_OK,
-    response_model=List[schemes.User],
-)
-async def get_list(db: Session = Depends(get_db)):
-    users = await logic.get_all(session=db)
-    lst_ = []
-    if not users:
-        return lst_
-    for user in users:
-        lst_.append(user.__dict__)
-    return lst_
 
 
 @router.post(

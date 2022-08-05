@@ -55,7 +55,7 @@ class TestCase:
             "login": "stri",
         }
         response = await client.post("api/v1/user", json=data)
-        assert response.status_code == 422
+        assert response.status_code == 201
 
     @pytest.mark.asyncio
     async def test_delete_user(self, client: AsyncClient):
@@ -65,7 +65,7 @@ class TestCase:
             "last_name": "Grechka",
             "phone": "380502906562",
             "password": "string3004",
-            "login": "string55",
+            "username": "string55",
         }
         response = await client.post("api/v1/user", json=data)
         assert response.status_code == 201

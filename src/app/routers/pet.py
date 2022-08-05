@@ -1,8 +1,6 @@
-from select import select
 from typing import List
 
-from sqlalchemy import inspect
-from sqlalchemy.orm import Session, selectinload
+from sqlalchemy.orm import Session
 
 from app.schemes import Message
 from app.services.pet import schemes
@@ -36,9 +34,9 @@ auth_handler = auth.AuthHandler()
     response_model_exclude={"category": {"id"}}
 )
 async def find_by_tag(
-    db: Session = Depends(get_db),
-    user=Depends(auth_handler.auth_wrapper),
-    tag:str = None
+        db: Session = Depends(get_db),
+        user=Depends(auth_handler.auth_wrapper),
+        tag: str = None
 ):
     res = await logic.find_by_tag(tag=tag, db=db)
     lst_ = []
@@ -52,6 +50,7 @@ async def find_by_tag(
         tags = []
     return lst_
 
+
 @router.get(
     "/pet/find_by_status",
     tags=["pet"],
@@ -60,22 +59,22 @@ async def find_by_tag(
     response_model_exclude={"category": {"id"}}
 )
 async def find_by_status(
-    status: str = Query(
-        examples={
-            "available": {
-                "name": "available",
+        status: str = Query(
+            examples={
+                "available": {
+                    "name": "available",
+                },
+                "pending": {
+                    "name": "pending",
+                },
+                "sold": {
+                    "name": "sold",
+                },
             },
-            "pending": {
-                "name": "pending",
-            },
-            "sold": {
-                "name": "sold",
-            },
-        },
-        default="available",
-    ),
-    db: Session = Depends(get_db),
-    user=Depends(auth_handler.auth_wrapper),
+            default="available",
+        ),
+        db: Session = Depends(get_db),
+        user=Depends(auth_handler.auth_wrapper),
 ):
     res = await logic.find_by_status(status=status, db=db)
     lst_ = []
@@ -98,9 +97,9 @@ async def find_by_status(
     responses={409: {"model": Message}, 404: {"model": Message}},
 )
 async def create_pet(
-    pet: schemes.PetBase,
-    db: Session = Depends(get_db),
-    user=Depends(auth_handler.auth_wrapper),
+        pet: schemes.PetBase,
+        db: Session = Depends(get_db),
+        user=Depends(auth_handler.auth_wrapper),
 ):
     r = await logic.get_by_id(id=pet.id, session=db)
     if r:
@@ -127,10 +126,8 @@ async def create_pet(
     },
     response_model_exclude={"category": {"id"}}
 )
-
-
 async def find_by_id(
-    pet_id: int, db: Session = Depends(get_db), user=Depends(auth_handler.auth_wrapper)
+        pet_id: int, db: Session = Depends(get_db), user=Depends(auth_handler.auth_wrapper)
 ):
     pet = await logic.get_pet_by_id(db=db, pet_id=pet_id)
 
@@ -146,6 +143,7 @@ async def find_by_id(
     pet['tag'] = tags
     return pet
 
+
 @router.delete(
     "/pet/{pet_id}",
     tags=["pet"],
@@ -154,7 +152,7 @@ async def find_by_id(
     responses={404: {"model": Message}},
 )
 async def delete_by_id(
-    pet_id: int, db: Session = Depends(get_db), user=Depends(auth_handler.auth_wrapper)
+        pet_id: int, db: Session = Depends(get_db), user=Depends(auth_handler.auth_wrapper)
 ):
     pet = await logic.get_by_id(id=pet_id, session=db)
 
@@ -176,10 +174,10 @@ async def delete_by_id(
     response_model_exclude={"category": {"id"}}
 )
 async def update_pet(
-    pet_id: int,
-    pet: schemes.PetPut,
-    db: Session = Depends(get_db),
-    user=Depends(auth_handler.auth_wrapper),
+        pet_id: int,
+        pet: schemes.PetPut,
+        db: Session = Depends(get_db),
+        user=Depends(auth_handler.auth_wrapper),
 ):
     p = await logic.get_by_id(id=pet_id, session=db)
 
