@@ -8,7 +8,6 @@ from core.cache.redis import redis
 
 class RedisBackend:
     async def get(self, key: str) -> Any:
-        print("called")
         result = await redis.get(key)
         if not result:
             return False
