@@ -1,21 +1,23 @@
 from core.exceptions.base import (ConflictException, NotFoundException,
                                   UnauthorizedException)
+from resources.strings import UserDoesNotFoundMessage, UserWithSameEmailExistsMessage, UserWithSameLoginExistsMessage, \
+    UserWithSamePhoneExistsMessage
 
 
 class UserWithSameEmailExists(ConflictException):
-    message = "User with same email exists"
+    message = UserWithSameEmailExistsMessage
 
 
 class UserWithSameLoginExists(ConflictException):
-    message = "User with same login exists"
+    message = UserWithSameLoginExistsMessage
 
 
 class UserWithSamePhoneExists(ConflictException):
-    message = "User with same phone exists"
+    message = UserWithSamePhoneExistsMessage
 
 
 class UserDoesNotExists(NotFoundException):
-    message = "User does not exists"
+    message = UserDoesNotFoundMessage
 
 
 class PasswordOrLoginDoesNotMatch(UnauthorizedException):

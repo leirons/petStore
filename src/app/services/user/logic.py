@@ -53,7 +53,6 @@ class UserLogic(BaseRepo):
     async def create_user(self, password: str, db: Session, user: schemes.UserCreate):
         import time
 
-        now = time.time()
         try:
             if await self.check_email(user.email, db):
                 return False, UserWithSameEmailExists
@@ -62,6 +61,7 @@ class UserLogic(BaseRepo):
             elif await self.check_phone(user.phone, db):
                 return False, UserWithSamePhoneExists
             hashed_password = self.auth_handler.get_passwords_hash(password)
+            print('hashed',hashed_password)
             data = user.dict()
             data["password"] = hashed_password
             db_user = self.model(**data)
@@ -69,11 +69,10 @@ class UserLogic(BaseRepo):
 
             await db.commit()
             await db.refresh(db_user)
-            end = time.time()
-            print(end - now)
-        except Exception:
+        except Exception as exc:
+            print(exc)
             return False, ServerError
-        return True, user
+        return True,db_user
 
     async def check_login(self, login: str, db: Session):
         if await self.get_user_by_login(db, login):

@@ -63,6 +63,7 @@ fastapi-admin = "*"
 redis = "*"
 pre-commit = "*"
 black = "*"
+bcrypt = "*"
 
 [dev-packages]
 

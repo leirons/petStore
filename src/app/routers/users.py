@@ -23,17 +23,18 @@ cache_manager = CacheManager(backend=RedisBackend(), key_maker=CustomKeyMaker())
 @router.post(
     "/user",
     tags=["user"],
-    response_model=schemes.UserCreate,
     status_code=status.HTTP_201_CREATED,
     responses={
         409: {"model": Message},
     },
+    response_model_exclude={"id"},
+    response_model=schemes.User
 )
 async def create_user(user: schemes.UserCreate, db: Session = Depends(get_db)):
     operation, res = await logic.create_user(db=db, user=user, password=user.password)
     if not operation:
         raise HTTPException(detail=res.message, status_code=res.error_code)
-    return res
+    return res.__dict__
 
 
 @router.post(
