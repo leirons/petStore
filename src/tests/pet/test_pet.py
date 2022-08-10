@@ -316,4 +316,4 @@ class TestCase:
 
         response = await client.post("api/v1/pet", json=pet_data, headers=headers)
         assert response.status_code == 404
-        assert response.json()["detail"] == "User does not exists"
+        assert response.json()["detail"] == "User does not found"
