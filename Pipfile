@@ -64,6 +64,8 @@ redis = "*"
 pre-commit = "*"
 black = "*"
 bcrypt = "*"
+httpx = "*"
+coverage = "*"
 
 [dev-packages]
 
