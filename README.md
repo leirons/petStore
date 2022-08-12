@@ -13,9 +13,9 @@
         - schemes.py -- Message Scheme for error log
         - server.py -- Init of FastAPI
             /routers
-            - pet.py - -- All routers of service pet
-            - store.py -- ALl routers of service store
-            - users.py -- All routers of service users
+            - pet.py - -- All routers of pet service
+            - store.py -- ALl routers of store service
+            - users.py -- All routers of users service
             /services
                 /pet
                 - logic.py -- database logic 
@@ -39,10 +39,10 @@
             - session.py -- Init of database
             /excpetions
             - base.py -- Base excpetions for all services
-            - pet.py -- Exceptions of service pet
+            - pet.py -- Exceptions of pet service
             - server.py -- Exceptions of Server
-            - store.py -- Exceptions of service store
-            - user.py -- Exceptions of service user
+            - store.py -- Exceptions of store service
+            - user.py -- Exceptions of user service
             /middlewares
             - authentication.py -- Authentication middleware for user, 
             it takes request and check if user loged if True it returs pydantic scheme of user
@@ -58,17 +58,17 @@
         /resources
         -  strings.py -- Messages for error
     /tests
-        - conftest.py -- 
+        - conftest.py -- Init env for tests
         /performance
-        - test_performance.py -- 
+        - test_performance.py -- Test of user performance
         /pet
-        - test_pet.py -- 
+        - test_pet.py -- Tests of pet service
         /store
-        - test_store.py -- 
+        - test_store.py --  Tests of store service
         /user
-        - test_email.py -- 
-        - test_phone.py -- 
-        - test_user.py -- 
+        - test_email.py --  Tests of email
+        - test_phone.py --  Tests of phone
+        - test_user.py --  Tests of user service
     pre-commig.config.yaml -- 
     docker-compose.yml -
      
