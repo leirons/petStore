@@ -1,7 +1,9 @@
 from core.exceptions.base import (ConflictException, NotFoundException,
                                   UnauthorizedException)
-from resources.strings import UserDoesNotFoundMessage, UserWithSameEmailExistsMessage, UserWithSameLoginExistsMessage, \
-    UserWithSamePhoneExistsMessage
+from resources.strings import (UserDoesNotFoundMessage,
+                               UserWithSameEmailExistsMessage,
+                               UserWithSameLoginExistsMessage,
+                               UserWithSamePhoneExistsMessage)
 
 
 class UserWithSameEmailExists(ConflictException):

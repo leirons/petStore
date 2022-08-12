@@ -1,11 +1,11 @@
 from datetime import datetime, timedelta
 
 import jwt
+from fastapi import HTTPException, Security
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from passlib.context import CryptContext
 
 from core.config import settings
-from fastapi import HTTPException, Security
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 
 class AuthHandler:

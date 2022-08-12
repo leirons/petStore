@@ -1,6 +1,6 @@
 from typing import List
 
-from pydantic import BaseModel, validator, create_model
+from pydantic import BaseModel, create_model, validator
 
 
 class Category(BaseModel):

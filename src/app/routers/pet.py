@@ -1,5 +1,6 @@
 from typing import List
 
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from app.schemes import Message
@@ -16,7 +17,6 @@ from core.cache.key_marker import CustomKeyMaker
 from core.db.sessions import get_db
 from core.exceptions.pet import PetAlreadyExists, PetDoesNotFound
 from core.exceptions.user import UserDoesNotExists
-from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 cache_manager = CacheManager(backend=RedisBackend(), key_maker=CustomKeyMaker())
 router = APIRouter()

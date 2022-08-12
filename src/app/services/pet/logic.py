@@ -1,10 +1,10 @@
-from sqlalchemy import select, update, delete
+from sqlalchemy import delete, select, update
 from sqlalchemy.orm import Session, selectinload
 
 from app.services.pet import schemes
-from core.repository.base import BaseRepo
 from app.services.pet.models import Tag
 from core.exceptions.server import ServerError
+from core.repository.base import BaseRepo
 
 
 class PetLogic(BaseRepo):

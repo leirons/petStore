@@ -44,9 +44,9 @@ async def start_db():
 @pytest_asyncio.fixture
 async def client() -> AsyncClient:
     async with AsyncClient(
-        app=app,
-        base_url="http://testserver/",
-        headers={"Content-Type": "application/json"},
+            app=app,
+            base_url="http://testserver/",
+            headers={"Content-Type": "application/json"},
     ) as client:
         await start_db()
         yield client

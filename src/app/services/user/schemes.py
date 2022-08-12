@@ -1,6 +1,6 @@
 from pydantic import BaseModel, validator
 
-from app.services.user.validate import validate_email,validate_phone
+from app.services.user.validate import validate_email, validate_phone
 
 
 class UserBase(BaseModel):

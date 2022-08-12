@@ -1,4 +1,7 @@
 import sentry_sdk
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.utils import get_openapi
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
@@ -6,9 +9,6 @@ from app.routers import pet, store, users
 from core.config import settings
 from core.middlewares.authentication import (AuthBackend,
                                              AuthenticationMiddleware)
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.openapi.utils import get_openapi
 
 
 def init_cors(app: FastAPI) -> None:

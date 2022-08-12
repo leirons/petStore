@@ -1,4 +1,5 @@
 
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.schemes import Message
@@ -7,7 +8,6 @@ from app.services.pet.models import Pet
 from app.services.store import schemes
 from app.services.store.logic import StoreLogic
 from app.services.store.models import Store
-
 from core import auth
 from core.cache.backend import RedisBackend
 from core.cache.cache import CacheManager
@@ -15,8 +15,6 @@ from core.cache.key_marker import CustomKeyMaker
 from core.db.sessions import get_db
 from core.exceptions.pet import PetDoesNotFound
 from core.exceptions.store import OrderAlreadyExists, OrderDoesNotFound
-
-from fastapi import APIRouter, Depends, HTTPException, status
 
 cache_manager = CacheManager(backend=RedisBackend(), key_maker=CustomKeyMaker())
 router = APIRouter()
