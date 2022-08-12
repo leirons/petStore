@@ -1,6 +1,6 @@
 from pydantic import BaseModel, validator
 
-from app.services.user.validate import validate_email
+from app.services.user.validate import validate_email,validate_phone
 
 
 class UserBase(BaseModel):
@@ -32,6 +32,12 @@ class UserCreateValidators(BaseModel):
         elif len(password) < 8:
             raise ValueError("Password should have more than 8 symbols ")
         return password
+
+    @validator("phone",check_fields=False)
+    def validate_phone(cls, phone):
+        if validate_phone(phone=phone):
+            return phone
+        raise ValueError("Phone does not correct, valid example(without + ) - 380502906561")
 
 class UserCreate(UserBase,UserCreateValidators):
     password: str = "string355"
