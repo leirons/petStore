@@ -82,6 +82,17 @@ docker-compose up --build
 docker exec (name of web service) alembic upgrade head
 ```
 
+
+### Another way -
+
+* Create .env file in root directory
+```
+DATABASE_URL=your
+TEST_DB=your
+SECRET=Your
+REDIS_HOST=your
+```
+
 ### Windows
 ```
  virtualenv myenv
