@@ -74,7 +74,7 @@
      
 ```     
 
-## How to run project
+## How to run
 
 ### Docker
 ```
