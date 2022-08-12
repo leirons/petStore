@@ -79,7 +79,8 @@
 ### Docker
 ```
 docker-compose up --build
-docker exec (name of web service) alembic upgrade head
+docker container ls
+docker exec (name of web service) alembic upgrade head  
 ```
 
 
