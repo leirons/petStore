@@ -61,7 +61,6 @@ class UserLogic(BaseRepo):
             elif await self.check_phone(user.phone, db):
                 return False, UserWithSamePhoneExists
             hashed_password = self.auth_handler.get_passwords_hash(password)
-            print('hashed',hashed_password)
             data = user.dict()
             data["password"] = hashed_password
             db_user = self.model(**data)
@@ -70,9 +69,8 @@ class UserLogic(BaseRepo):
             await db.commit()
             await db.refresh(db_user)
         except Exception as exc:
-            print(exc)
             return False, ServerError
-        return True,db_user
+        return True, db_user
 
     async def check_login(self, login: str, db: Session):
         if await self.get_user_by_login(db, login):
@@ -88,7 +86,6 @@ class UserLogic(BaseRepo):
         if await self.get_user_by_email(db, email):
             return True
         return False
-
 
     async def patch_user(self, db: Session, user: schemes.UserPatch, username: str):
         try:
@@ -106,6 +103,5 @@ class UserLogic(BaseRepo):
             await db.execute(query)
             await db.commit()
         except Exception as exc:
-            print(exc)
-            return False,ServerError
+            return False, ServerError
         return True, user
