@@ -95,21 +95,21 @@ REDIS_HOST=your
 
 ### Windows
 ```
- virtualenv myenv
- myenv\Scripts\activate
- pip3 install pipenv
- pipenv install
- cd src
- uvicorn app.server:app
+1 - virtualenv myenv
+2 - myenv\Scripts\activate
+3 - cd src
+4 - pip3 install pipenv
+5 -  pipenv install
+6 - uvicorn app.server:app
 ```
 
 
 ### Linux
 ```
-python3 -m venv venv 
-source venv/bin/activate
-pip3 install pipenv
-pipenv install
-cd src
-uvicorn app.server:app
+1 - python3 -m venv venv 
+2 - source venv/bin/activate
+3 - cd src
+4 - pip3 install pipenv
+5 -  pipenv install
+6 - uvicorn app.server:app
 ```
