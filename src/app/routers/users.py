@@ -1,4 +1,3 @@
-
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
 
@@ -42,8 +41,9 @@ async def create_user(user: schemes.UserCreate, db: Session = Depends(get_db)):
     tags=["user"],
     responses={401: {"model": Message}},
     status_code=status.HTTP_200_OK,
+    response_model=schemes.UserToken
 )
-async def login(user: schemes.UserToken, db: Session = Depends(get_db)):
+async def login(user: schemes.UserLogin, db: Session = Depends(get_db)):
     user_old = await logic.get_user_by_login(db, user.username)
     if user_old and auth_handler.verify_password(
             plain_password=user.password, hash_password=user_old.password
@@ -94,3 +94,8 @@ async def patch_user(
     if not operation:
         raise HTTPException(detail=res.message, status_code=res.error_code)
     return res
+
+
+@router.get("/user/refresh_token", tags=["user"],response_model=schemes.UserToken)
+async def refresh_token(request: Request, db: Session = Depends(get_db),user=Depends(auth_handler.auth_wrapper)):
+    return {"token":auth_handler.encode_token(user_id=request.user.id)}

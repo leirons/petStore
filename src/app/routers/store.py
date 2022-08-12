@@ -1,4 +1,3 @@
-
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -112,6 +111,7 @@ async def find_by_id(
         )
     return order.__dict__
 
+
 @router.put(
     "/store/{order_id}",
     tags=["store"],
@@ -133,5 +133,5 @@ async def update_by_id(
         raise HTTPException(
             detail=OrderDoesNotFound.message, status_code=OrderDoesNotFound.error_code
         )
-    await logic.update_by_id(id=order_id,session=db,params=order.dict())
+    await logic.update_by_id(id=order_id, session=db, params=order.dict())
     return order.dict()

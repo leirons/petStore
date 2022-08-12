@@ -17,7 +17,7 @@ class UserBase(BaseModel):
 
 
 class UserCreateValidators(BaseModel):
-    @validator("username",check_fields=False)
+    @validator("username", check_fields=False)
     def validate_login(cls, username):
         if len(username) > 30:
             raise ValueError("Username should not have more than 30 symbols ")
@@ -25,7 +25,7 @@ class UserCreateValidators(BaseModel):
             raise ValueError("Username should have more than 8 symbols ")
         return username
 
-    @validator("password",check_fields=False)
+    @validator("password", check_fields=False)
     def validate_password(cls, password):
         if len(password) > 30:
             raise ValueError("Password should not have more than 30 symbols ")
@@ -33,17 +33,16 @@ class UserCreateValidators(BaseModel):
             raise ValueError("Password should have more than 8 symbols ")
         return password
 
-    @validator("phone",check_fields=False)
+    @validator("phone", check_fields=False)
     def validate_phone(cls, phone):
         if validate_phone(phone=phone):
             return phone
         raise ValueError("Phone does not correct, valid example(without + ) - 380502906561")
 
-class UserCreate(UserBase,UserCreateValidators):
+
+class UserCreate(UserBase, UserCreateValidators):
     password: str = "string355"
     username: str = "string355"
-
-
 
 
 class User(UserBase):
@@ -56,6 +55,10 @@ class User(UserBase):
 
 
 class UserToken(BaseModel):
+    token: str
+
+
+class UserLogin(BaseModel):
     username: str = "string355"
     password: str = "string355"
 
