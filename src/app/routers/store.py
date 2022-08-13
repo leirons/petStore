@@ -122,13 +122,19 @@ async def find_by_id(
     },
 )
 async def update_by_id(
-        order: schemes.Order,
+        order: schemes.OrderUpdate,
         order_id: int,
         db: Session = Depends(get_db),
         user=Depends(auth_handler.auth_wrapper),
 
 ):
     o = await logic.get_by_id(id=order_id, session=db)
+    pet = await pet_logic.get_by_id(id=order.pet_id, session=db)
+    if not pet:
+        raise HTTPException(
+            detail=PetDoesNotFound.message, status_code=PetDoesNotFound.error_code
+        )
+
     if not o:
         raise HTTPException(
             detail=OrderDoesNotFound.message, status_code=OrderDoesNotFound.error_code
