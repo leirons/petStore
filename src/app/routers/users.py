@@ -10,7 +10,7 @@ from core.cache.backend import RedisBackend
 from core.cache.cache import CacheManager
 from core.cache.key_marker import CustomKeyMaker
 from core.db.sessions import get_db
-from core.exceptions.user import PasswordOrLoginDoesNotMatch
+from core.exceptions.user import PasswordOrLoginDoesNotMatch,UserDoesNotExists,UserWithSameLoginExists
 
 router = APIRouter()
 logic = UserLogic(model=Users)
@@ -69,6 +69,19 @@ async def delete_user(username: str, request: Request, db: Session = Depends(get
     return res
 
 
+
+@router.get(
+    "/user/{username}", response_model=schemes.User, tags=["user"], status_code=status.HTTP_200_OK
+)
+async def get_user_by_username(
+        username:str,
+        db: Session = Depends(get_db),
+):
+    res = await logic.get_user_by_login(db,username)
+    if not res:
+        raise HTTPException(status_code=UserDoesNotExists.error_code,detail=UserDoesNotExists.message)
+    return res
+
 @router.get(
     "/user", response_model=schemes.User, tags=["user"], status_code=status.HTTP_200_OK
 )
@@ -90,7 +103,12 @@ async def get_myself(
 async def patch_user(
         username: str, user: schemes.UserPatch, db: Session = Depends(get_db)
 ):
+    res = await logic.get_user_by_login(db,user.username)
+    if res:
+        raise HTTPException(status_code=UserWithSameLoginExists.error_code,detail=UserWithSameLoginExists.message)
+
     operation, res = await logic.patch_user(db=db, user=user, username=username)
+
     if not operation:
         raise HTTPException(detail=res.message, status_code=res.error_code)
     return res
