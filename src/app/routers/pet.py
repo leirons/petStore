@@ -30,7 +30,7 @@ auth_handler = auth.AuthHandler()
     "/pet/find_by_tag",
     tags=["pet"],
     response_model=List[schemes.PetBase],
-    status_code=status.HTTP_200_OK,
+    status_code=status.HTTP_201_CREATED,
     response_model_exclude={"category": {"id"}}
 )
 async def find_by_tag(
