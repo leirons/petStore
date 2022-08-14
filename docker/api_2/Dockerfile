@@ -13,11 +13,8 @@ RUN apt-get update \
 WORKDIR /edvantis/src
 
 COPY . /edvantis/
+COPY requirements.txt /edvantis/src
 
 RUN pip install -r requirements.txt
-
-#RUN pip install pipenv
-#COPY Pipfile Pipfile.lock /edvantis/
-#RUN pipenv install --system --dev
 
 EXPOSE 8000
