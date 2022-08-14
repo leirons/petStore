@@ -11,12 +11,18 @@ from core.cache.cache import CacheManager
 from core.cache.key_marker import CustomKeyMaker
 from core.db.sessions import get_db
 from core.exceptions.user import PasswordOrLoginDoesNotMatch, UserDoesNotExists, UserWithSameLoginExists
+from core.cache.backend import redis
 
 router = APIRouter()
 logic = UserLogic(model=Users)
 auth_handler = auth.AuthHandler()
 
 cache_manager = CacheManager(backend=RedisBackend(), key_maker=CustomKeyMaker())
+
+
+@router.get("/user/refresh_token", tags=["user"], response_model=schemes.UserToken)
+async def refresh_token(request: Request, db: Session = Depends(get_db), user=Depends(auth_handler.auth_wrapper)):
+    return {"token": await auth_handler.encode_token(user_id=request.user.id)}
 
 
 @router.post(
@@ -45,10 +51,10 @@ async def create_user(user: schemes.UserCreate, db: Session = Depends(get_db)):
 )
 async def login(user: schemes.UserLogin, db: Session = Depends(get_db)):
     user_old = await logic.get_user_by_login(db, user.username)
-    if user_old and auth_handler.verify_password(
+    if user_old and await auth_handler.verify_password(
             plain_password=user.password, hash_password=user_old.password
     ):
-        token = auth_handler.encode_token(user_old.id)
+        token = await auth_handler.encode_token(user_old.id)
         return {"token": token}
     raise HTTPException(
         status_code=PasswordOrLoginDoesNotMatch.error_code,
@@ -112,8 +118,3 @@ async def patch_user(
     if not operation:
         raise HTTPException(detail=res.message, status_code=res.error_code)
     return res
-
-
-@router.get("/user/refresh_token", tags=["user"], response_model=schemes.UserToken)
-async def refresh_token(request: Request, db: Session = Depends(get_db), user=Depends(auth_handler.auth_wrapper)):
-    return {"token": auth_handler.encode_token(user_id=request.user.id)}

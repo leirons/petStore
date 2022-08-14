@@ -60,7 +60,7 @@ class UserLogic(BaseRepo):
                 return False, UserWithSameLoginExists
             elif await self.check_phone(user.phone, db):
                 return False, UserWithSamePhoneExists
-            hashed_password = self.auth_handler.get_passwords_hash(password)
+            hashed_password = await self.auth_handler.get_passwords_hash(password)
             data = user.dict()
             data["password"] = hashed_password
             db_user = self.model(**data)
@@ -96,7 +96,7 @@ class UserLogic(BaseRepo):
             if not res:
                 return False, UserDoesNotExists
             if user.password is not None:
-                hashed_password = self.auth_handler.get_passwords_hash(user.password)
+                hashed_password = await self.auth_handler.get_passwords_hash(user.password)
                 user.password = hashed_password
 
             query = update(self.model).where(self.model.username == username).values(**user.dict())
