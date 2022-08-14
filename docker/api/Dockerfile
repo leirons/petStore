@@ -12,10 +12,10 @@ RUN apt-get update \
 
 WORKDIR /edvantis/src
 
-COPY . /edvantis
+COPY . /edvantis/
 
-RUN pip install pipenv
+RUN python -m pip install pipenv==2021.5.29
 COPY Pipfile Pipfile.lock /edvantis/
-RUN pipenv install --system --dev
+RUN pipenv  install --system --dev
 
 EXPOSE 8000

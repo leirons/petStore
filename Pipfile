@@ -53,16 +53,6 @@ pylint = "*"
 sentry-sdk = "*"
 flake8 = "*"
 pytest = "*"
-pytest-asyncio = "*"
-databases = "*"
-asyncio = "*"
-pytest-async-sqlalchemy = "*"
-aioredis = "*"
-ujson = "*"
-fastapi-admin = "*"
-redis = "*"
-pre-commit = "*"
-black = "*"
 
 [dev-packages]
 
