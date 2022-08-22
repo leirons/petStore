@@ -8,14 +8,14 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: fastapi-todo-api
+      app: fastapi-pet-store
   template:
     metadata:
       labels:
-        app: fastapi-todo-api
+        app: fastapi-pet-store
     spec:
       containers:
-        - name: fastapi-todo-api
+        - name: fastapi-pet-store
           image:  grecigor21/petstore:latest
           command: [ "sleep" ]
           args: [ "infinity" ]
